@@ -3,8 +3,7 @@ from urllib.parse import urlencode
 
 import requests
 
-from openweather_sdk.exceptions import (BadResponseException,
-                                        UnexpectedException)
+from openweather_sdk.exceptions import BadResponseException, UnexpectedException
 from openweather_sdk.globals import _DOMAIN
 
 

@@ -4,9 +4,11 @@ import time
 from threading import Thread
 
 from openweather_sdk.cache import _ClientCache
-from openweather_sdk.exceptions import (ClientAlreadyExistsException,
-                                        ClientDoesntExistException,
-                                        InvalidLocationException)
+from openweather_sdk.exceptions import (
+    ClientAlreadyExistsException,
+    ClientDoesntExistException,
+    InvalidLocationException,
+)
 from openweather_sdk.globals import _BEHAVIORS, _LANGUAGES, _UNITS
 from openweather_sdk.json_processor import _JSONProcessor
 from openweather_sdk.rest.geocoding import _GeocodingAPI

@@ -1,7 +1,6 @@
 from openweather_sdk.exceptions import InvalidLocationException
 from openweather_sdk.globals import _GEOCODING_API_VERSIONS
-from openweather_sdk.rest.base import (_APIRequest, _build_full_path,
-                                       _create_path)
+from openweather_sdk.rest.base import _APIRequest, _build_full_path, _create_path
 from openweather_sdk.validators import _validate_attr
 
 
