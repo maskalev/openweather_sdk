@@ -30,7 +30,7 @@ saved (previously requested) cities.
 ## Installation
 
 ```python
-pip install openweather_sdk
+pip install msklv-openweather-sdk
 ```
 
 ## Prerequisites
