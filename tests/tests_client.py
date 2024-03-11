@@ -7,6 +7,8 @@ import pytest
 __FILE_PATH__ = Path(__file__).parent.parent.absolute()
 sys.path.append(f"{__FILE_PATH__}/src")
 
+from fixtures import WEATHER_API_CORRECT_DATA
+
 from openweather_sdk import Client
 from openweather_sdk.exceptions import (ClientAlreadyExistsException,
                                         ClientDoesntExistException)
@@ -56,23 +58,7 @@ class TestClient:
         coordinates = weather_client._get_coordinates("Paris")
         assert coordinates == (2.32, 48.859)
         mock_response_weather = mock.Mock()
-        mock_response_weather.return_value = {
-            "coord": {"lon": 2.32, "lat": 48.858},
-            "weather": [{"main": "Clear", "description": "clear sky"}],
-            "main": {"temp": 8.19},
-            "visibility": 10000,
-            "wind": {},
-            "clouds": {},
-            "cod": 200,
-        }
+        mock_response_weather.return_value = WEATHER_API_CORRECT_DATA
         mock_get_weather.side_effect = mock_response_weather
         weather_data = weather_client._get_current_weather_coordinates(*coordinates)
-        assert weather_data == {
-            "coord": {"lon": 2.32, "lat": 48.858},
-            "weather": [{"main": "Clear", "description": "clear sky"}],
-            "main": {"temp": 8.19},
-            "visibility": 10000,
-            "wind": {},
-            "clouds": {},
-            "cod": 200,
-        }
+        assert weather_data == WEATHER_API_CORRECT_DATA

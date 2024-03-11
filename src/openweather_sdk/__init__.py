@@ -8,6 +8,7 @@ from openweather_sdk.exceptions import (ClientAlreadyExistsException,
                                         ClientDoesntExistException,
                                         InvalidLocationException)
 from openweather_sdk.globals import _BEHAVIORS, _LANGUAGES, _UNITS
+from openweather_sdk.json_processor import _JSONProcessor
 from openweather_sdk.rest.geocoding import _GeocodingAPI
 from openweather_sdk.rest.openweather import _OpenWeather
 from openweather_sdk.rest.weather import _WeatherAPI
@@ -144,13 +145,22 @@ class Client:
                 weather = weather_api._get_current_wheather()
                 self.cache._update_info(lon, lat, weather)
 
-    def get_location_weather(self, location):
-        """Returns current weather in location (city name, state code (only for the US) and country code divided by comma. Please use ISO 3166 country codes)."""
+    def get_location_weather(self, location, compact_mode=True):
+        """Returns current weather in location (city name, state code (only for
+        the US) and country code divided by comma. Please use ISO 3166 country
+        codes).
+
+        Args:
+            location (str): city name, state code (only for the US) and country code divided by comma.
+            compact_mode (bool, optional): Determines whether to return the response in a compact format.
+        """
         if not self.is_alive:
             raise ClientDoesntExistException
         if not isinstance(location, str):
             raise InvalidLocationException
-        return self._get_current_weather_location(location)
+        weather = self._get_current_weather_location(location)
+        json_processor = _JSONProcessor(weather, compact_mode)
+        return json_processor._handle()
 
     def health_check(self):
         """Check if available API service."""
