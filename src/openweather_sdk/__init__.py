@@ -37,7 +37,7 @@ class Client:
         units="metric",
         cache_size=10,
         ttl=600,
-        **kwargs
+        **kwargs,
     ):
         """
         Сlient initialization.
