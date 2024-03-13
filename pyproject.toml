@@ -28,6 +28,7 @@ dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
 
 [project.urls]
 Homepage = "https://github.com/maskalev/openweather_sdk"
+Changelog = "https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md"
 
 [project.scripts]
 realpython = "reader.__main__:main"
