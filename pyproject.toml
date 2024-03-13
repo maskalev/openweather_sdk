@@ -30,9 +30,6 @@ dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
 Homepage = "https://github.com/maskalev/openweather_sdk"
 Changelog = "https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md"
 
-[project.scripts]
-realpython = "reader.__main__:main"
-
 [tool.bumpver]
 current_version = "0.2.2"
 version_pattern = "MAJOR.MINOR.PATCH"
