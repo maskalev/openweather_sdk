@@ -7,34 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+No changes yet.
+
+## [0.2.3] - 2024-03-14
+
 ### Fixed
 
-- Fixed errors that occurred when changing the token of the Client instance
+- Fixed errors that occurred when changing the token of the Client instance.
 
 ## [0.2.2] - 2024-03-11
 
 ### Changed 
 
-- Minor changes
+- Minor changes.
 
 ## [0.2.1] - 2024-03-11
 
 ### Changed 
 
-- Minor changes
+- Minor changes.
 
 ## [0.2.0] - 2024-03-11
 
 ### Added
 
-- JSON_Processor (to get weather in compact mode)
+- JSON_Processor (to get weather in compact mode).
 
 ## [0.1.1] - 2024-03-11
 
 ### Changed 
 
-- Minor changes
+- Minor changes.
 
 ## [0.1.0] - 2024-03-10
 
-Init project
+- Init project.
