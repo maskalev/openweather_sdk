@@ -57,7 +57,6 @@ class Client:
         self.cache_size = cache_size
         self.ttl = ttl
         self.cache = _ClientCache(self.cache_size, self.ttl, self.mode)
-        self._active_tokens.add(self.token)
 
         if self.mode == "polling":
             self.polling_thread = Thread(target=self._polling)
@@ -81,6 +80,8 @@ class Client:
 
     @token.setter
     def token(self, value):
+        if hasattr(self, "_token"):
+            Client._active_tokens.discard(self._token)
         self._token = self._validate_token(value)
 
     @mode.setter
@@ -97,20 +98,21 @@ class Client:
 
     @property
     def is_alive(self):
-        return self.token in self._active_tokens
+        return self.token in Client._active_tokens
 
     def remove(self):
         """Remove the current client."""
         if self.is_alive:
-            self._active_tokens.discard(self.token)
+            Client._active_tokens.discard(self.token)
         else:
             raise ClientDoesntExistException
         if self.mode == "polling":
             self.polling_thread.join()
 
     def _validate_token(self, token):
-        if token in self._active_tokens:
+        if token in Client._active_tokens:
             raise ClientAlreadyExistsException
+        Client._active_tokens.add(token)
         return token
 
     def _get_coordinates(self, location):

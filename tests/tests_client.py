@@ -40,8 +40,10 @@ class TestClient:
 
     def test_duplicate_token(self):
         with pytest.raises(ClientAlreadyExistsException):
+            client = Client(token="token")
             Client(token="token")
-            Client(token="token")
+        client.token = "another_token"
+        Client(token="token")
 
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
     @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
