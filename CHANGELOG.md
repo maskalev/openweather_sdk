@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No changes yet.
+### Added
+
+- Weather requests by zip/postal code.
 
 ## [0.2.3] - 2024-03-14
 

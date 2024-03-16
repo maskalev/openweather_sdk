@@ -77,9 +77,40 @@ the API polling interval.
 
 ## Weather request
 
-Currently, handling requests for current weather by location name is
-implemented. By default, the response is returned in a compact format. You can
+Currently, handling requests for current weather by location name or zip code is
+implemented.
+
+By default, the response is returned in a compact format. You can
 change this behavior by passing an [additional argument](#additional-arguments-1).
+
+Also, refer to [the example queries](#usage-example).
+
+### Weather request by location name
+
+To request weather by location name, you need to pass the city name as an 
+argument, and optionally the state code (only for the US) and country code, 
+separated by commas. 
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.get_location_weather("Paris")
+```
+
+Please use
+[ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes.
+
+### Weather request by zip code
+
+To request weather by location name, you need to pass as an argument zip/post 
+code and country code divided by comma.
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.get_zip_weather("75007,FR")
+```
+
+Please use
+[ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes.
 
 ### Additional arguments
 
@@ -195,12 +226,12 @@ Description of full format see
 
 ## Usage example
 
-```python
+```bash
 >>> from openweather_sdk import Client
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.health_check()
 200
->>> c.get_location_weather("Paris")
+>>> c.get_location_weather("Paris")  # request by location name
 {
     "weather": {
         "main": "Clear",
@@ -264,6 +295,72 @@ Description of full format see
     "id": 6545270,
     "name": "Palais-Royal",
     "cod": 200
+}
+>>> c.get_zip_weather("75007,FR")  # request by zip code
+{
+    'weather': {
+        'main': 'Clouds',
+        'description': 'overcast clouds'
+    },
+    'temperature': {
+        'temp': 10.69,
+        'feels_like': 10.06
+    },
+    'visibility': 10000,
+    'wind': {
+        'speed': 4.63
+    },
+    'datatime': 1710577539,
+    'sys': {
+        'sunrise': 1710568880,
+        'sunset': 1710611823
+    },
+    'timezone': 3600,
+    'name': 'Paris'
+}
+>>> c.get_zip_weather("75007,FR", compact_mode=False)
+{
+    'coord': {
+        'lon': 2.3486,
+        'lat': 48.8534
+    },
+    'weather': [
+        {
+            'id': 804,
+            'main': 'Clouds',
+            'description': 'overcast clouds',
+            'icon': '04d'
+        }
+    ],
+    'base': 'stations',
+    'main': {
+        'temp': 10.69,
+        'feels_like': 10.06,
+        'temp_min': 10.1,
+        'temp_max': 11.54,
+        'pressure': 1021,
+        'humidity': 86
+    },
+    'visibility': 10000,
+    'wind': {
+        'speed': 4.63,
+        'deg': 270
+    },
+    'clouds': {
+        'all': 100
+    },
+    'dt': 1710577539,
+    'sys': {
+        'type': 2,
+        'id': 2041230,
+        'country': 'FR',
+        'sunrise': 1710568880,
+        'sunset': 1710611823
+    },
+    'timezone': 3600,
+    'id': 2988507,
+    'name': 'Paris',
+    'cod': 200
 }
 >>> c.remove()
 ```

@@ -115,15 +115,27 @@ class Client:
         Client._active_tokens.add(token)
         return token
 
-    def _get_coordinates(self, location):
+    def _get_location_coordinates(self, location):
         geocoding_api = _GeocodingAPI(location=location, appid=self.token)
         geo_info = geocoding_api._direct()
-        lat = round(geo_info["lat"], 3)
-        lon = round(geo_info["lon"], 3)
+        return self._round_coordinates(geo_info["lon"], geo_info["lat"])
+
+    def _get_zip_code_coordinates(self, zip_code):
+        geocoding_api = _GeocodingAPI(zip_code=zip_code, appid=self.token)
+        geo_info = geocoding_api._zip()
+        return self._round_coordinates(geo_info["lon"], geo_info["lat"])
+
+    def _round_coordinates(self, lon, lat):
+        lat = round(lat, 3)
+        lon = round(lon, 3)
         return lon, lat
 
-    def _get_current_weather_location(self, location):
-        lon, lat = self._get_coordinates(location)
+    def _get_location_current_weather(self, location):
+        lon, lat = self._get_location_coordinates(location)
+        return self._get_current_weather_coordinates(lon, lat)
+
+    def _get_zip_code_current_weather(self, zip_code):
+        lon, lat = self._get_zip_code_coordinates(zip_code)
         return self._get_current_weather_coordinates(lon, lat)
 
     def _get_current_weather_coordinates(self, lon, lat):
@@ -150,7 +162,8 @@ class Client:
                 self.cache._update_info(lon, lat, weather)
 
     def get_location_weather(self, location, compact_mode=True):
-        """Returns current weather in location (city name, state code (only for
+        """
+        Returns current weather in location (city name, state code (only for
         the US) and country code divided by comma. Please use ISO 3166 country
         codes).
 
@@ -162,7 +175,24 @@ class Client:
             raise ClientDoesntExistException
         if not isinstance(location, str):
             raise InvalidLocationException
-        weather = self._get_current_weather_location(location)
+        weather = self._get_location_current_weather(location)
+        json_processor = _JSONProcessor(weather, compact_mode)
+        return json_processor._handle()
+
+    def get_zip_weather(self, zip_code, compact_mode=True):
+        """
+        Returns current weather by zip/post code and country code divided by
+        comma. Please use ISO 3166 country codes.
+
+        Args:
+            zip_code (str): zip/post code and country code divided bycomma.
+            compact_mode (bool, optional): Determines whether to return the response in a compact format.
+        """
+        if not self.is_alive:
+            raise ClientDoesntExistException
+        if not isinstance(zip_code, str):
+            raise InvalidLocationException
+        weather = self._get_zip_code_current_weather(zip_code)
         json_processor = _JSONProcessor(weather, compact_mode)
         return json_processor._handle()
 
