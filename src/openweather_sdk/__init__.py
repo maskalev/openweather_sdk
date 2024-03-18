@@ -1,7 +1,7 @@
 __version__ = "0.3.0"
 
 import time
-from threading import Thread
+from threading import Thread, Lock
 
 from openweather_sdk.cache import _ClientCache
 from openweather_sdk.exceptions import (
@@ -57,6 +57,7 @@ class Client:
         self.cache_size = cache_size
         self.ttl = ttl
         self.cache = _ClientCache(self.cache_size, self.ttl, self.mode)
+        self.lock = Lock()
 
         if self.mode == "polling":
             self.polling_thread = Thread(target=self._polling)
@@ -139,14 +140,16 @@ class Client:
         return self._get_current_weather_coordinates(lon, lat)
 
     def _get_current_weather_coordinates(self, lon, lat):
-        if self.cache._is_relevant_info(lon, lat):
-            return self.cache._get_info(lon, lat)
+        with self.lock:
+            if self.cache._is_relevant_info(lon, lat):
+                return self.cache._get_info(lon, lat)
 
         weather_api = _WeatherAPI(lon=lon, lat=lat, appid=self.token)
         weather = weather_api._get_current_wheather()
 
-        self.cache._add_info(lon, lat, weather)
-        return weather
+        with self.lock:
+            self.cache._add_info(lon, lat, weather)
+            return weather
 
     def _polling(self):
         while self.is_alive:
@@ -158,8 +161,9 @@ class Client:
                 if (lon, lat) not in self.cache.cache:
                     continue
                 weather_api = _WeatherAPI(lon=lon, lat=lat, appid=self.token)
-                weather = weather_api._get_current_wheather()
-                self.cache._update_info(lon, lat, weather)
+                with self.lock:
+                    weather = weather_api._get_current_wheather()
+                    self.cache._update_info(lon, lat, weather)
 
     def get_location_weather(self, location, compact_mode=True):
         """
