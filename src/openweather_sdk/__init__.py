@@ -1,7 +1,7 @@
 __version__ = "0.3.0"
 
 import time
-from threading import Thread, Lock
+from threading import Lock, Thread
 
 from openweather_sdk.cache import _ClientCache
 from openweather_sdk.exceptions import (
