@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `current_weather` method to enable weather requests based on either
+  location name or zip/postal code.
+
+### Deprecated
+
+- `get_location_weather` method will be deprecated in version 1.0.0.
+  
+- `get_zip_weather` method will be deprecated in version 1.0.0.
+
+- `compact_mode` will be deprecated in version 1.0.0.
+
 ## [0.3.1] - 2024-03-19
 
 ### Security

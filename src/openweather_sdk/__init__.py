@@ -1,6 +1,7 @@
 __version__ = "0.3.1"
 
 import time
+import warnings
 from threading import Lock, Thread
 
 from openweather_sdk.cache import _ClientCache
@@ -15,6 +16,8 @@ from openweather_sdk.rest.geocoding import _GeocodingAPI
 from openweather_sdk.rest.openweather import _OpenWeather
 from openweather_sdk.rest.weather import _WeatherAPI
 from openweather_sdk.validators import _validate_attr
+
+warnings.filterwarnings("always", category=DeprecationWarning, module="openweather_sdk")
 
 
 class Client:
@@ -173,7 +176,7 @@ class Client:
 
         Args:
             location (str): city name, state code (only for the US) and country code divided by comma.
-            compact_mode (bool, optional): Determines whether to return the response in a compact format.
+            compact_mode (bool, optional): Determines whether to return the response in a compact format. Defaults to True.
         """
         if not self.is_alive:
             raise ClientDoesntExistException
@@ -181,6 +184,10 @@ class Client:
             raise InvalidLocationException
         weather = self._get_location_current_weather(location)
         json_processor = _JSONProcessor(weather, compact_mode)
+        warnings.warn(
+            "The 'get_location_weather' method will be deprecated in version 1.0.0.",
+            DeprecationWarning,
+        )
         return json_processor._handle()
 
     def get_zip_weather(self, zip_code, compact_mode=True):
@@ -189,8 +196,8 @@ class Client:
         comma. Please use ISO 3166 country codes.
 
         Args:
-            zip_code (str): zip/post code and country code divided bycomma.
-            compact_mode (bool, optional): Determines whether to return the response in a compact format.
+            zip_code (str): zip/post code and country code divided by comma.
+            compact_mode (bool, optional): Determines whether to return the response in a compact format. Defaults to True.
         """
         if not self.is_alive:
             raise ClientDoesntExistException
@@ -198,7 +205,36 @@ class Client:
             raise InvalidLocationException
         weather = self._get_zip_code_current_weather(zip_code)
         json_processor = _JSONProcessor(weather, compact_mode)
+        warnings.warn(
+            "The 'get_zip_weather' method will be deprecated in version 1.0.0.",
+            DeprecationWarning,
+        )
         return json_processor._handle()
+
+    def current_weather(self, location=None, zip_code=None):
+        """
+        Returns current weather in a specified location.
+        The location can be provided either as a combination of city name,
+        state code (for the US), and country code separated by commas, or
+        as a combination of zip/post code and country code separated by commas.
+        Please ensure the usage of ISO 3166 country codes.
+
+        Args:
+            location (str, optional): city name, state code (only for the US) and country code divided by comma.
+            zip_code (str, optional): zip/post code and country code divided by comma.
+        """
+        if not self.is_alive:
+            raise ClientDoesntExistException
+        if not location and not zip_code:
+            raise InvalidLocationException
+        if location:
+            if not isinstance(location, str):
+                raise InvalidLocationException
+            return self._get_location_current_weather(location)
+        if zip_code:
+            if not isinstance(zip_code, str):
+                raise InvalidLocationException
+            return self._get_zip_code_current_weather(zip_code)
 
     def health_check(self):
         """Check if available API service."""

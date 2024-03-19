@@ -80,8 +80,11 @@ the API polling interval.
 Currently, handling requests for current weather by location name or zip code is
 implemented.
 
-By default, the response is returned in a compact format. You can
-change this behavior by passing an [additional argument](#additional-arguments-1).
+By default, the response is returned in a compact format. You can change this
+behavior by passing an [additional argument](#additional-arguments-1).
+
+Compact format will be deprecated in
+[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
 Also, refer to [the example queries](#usage-example).
 
@@ -94,6 +97,18 @@ separated by commas.
 ```bash
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.get_location_weather("Paris")
+```
+
+The `get_location_weather` method will be deprecated in
+[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
+
+Starting from version 0.3.2, it is recommended to use the `current_weather`
+method with the city name as an argument, and optionally the state code (only
+for the US) and country code, separated by commas.
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_weather(location="Paris")
 ```
 
 Please use
@@ -109,6 +124,17 @@ code and country code divided by comma.
 >>> c.get_zip_weather("75007,FR")
 ```
 
+The `get_zip_weather` method will be deprecated in
+[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
+
+Starting from version 0.3.2, it is recommended to use the `current_weather`
+method with an argument zip/post code and country code divided by comma.
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_weather(zip_code="75007,FR")
+```
+
 Please use
 [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) country codes.
 
@@ -117,9 +143,16 @@ Please use
 `compact_mode` - determines whether to return the response in a compact format.
 Defaults: True.
 
+The `compact_mode` will be deprecated in
+[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
+
 ## Description of response formats
 
 ### Compact format (used by default)
+
+The `compact_mode` will be deprecated in
+[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
+
 
 ```json
 {
