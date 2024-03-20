@@ -1,7 +1,7 @@
 from openweather_sdk.exceptions import InvalidLocationException
 from openweather_sdk.globals import _GEOCODING_API_VERSIONS
 from openweather_sdk.rest.base import _APIRequest, _build_full_path, _create_path
-from openweather_sdk.validators import _validate_attr
+from openweather_sdk.validators import _validate_selected_attr
 
 
 class _GeocodingAPI:
@@ -24,7 +24,7 @@ class _GeocodingAPI:
 
     @version.setter
     def version(self, value):
-        self._version = _validate_attr(value, _GEOCODING_API_VERSIONS)
+        self._version = _validate_selected_attr(value, _GEOCODING_API_VERSIONS)
 
     def _direct(self):
         """Get geographical data by using name of the location (city name or area name)."""

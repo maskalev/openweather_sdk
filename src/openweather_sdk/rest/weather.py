@@ -1,6 +1,6 @@
 from openweather_sdk.globals import _WEATHER_API_VERSIONS
 from openweather_sdk.rest.base import _APIRequest, _build_full_path, _create_path
-from openweather_sdk.validators import _validate_attr
+from openweather_sdk.validators import _validate_selected_attr
 
 
 class _WeatherAPI:
@@ -24,7 +24,7 @@ class _WeatherAPI:
 
     @version.setter
     def version(self, value):
-        self._version = _validate_attr(value, _WEATHER_API_VERSIONS)
+        self._version = _validate_selected_attr(value, _WEATHER_API_VERSIONS)
 
     def _get_current_wheather(self):
         """Get the current weather at the specified point."""

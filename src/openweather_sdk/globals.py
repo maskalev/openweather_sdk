@@ -4,7 +4,7 @@ _UNITS = {
     "imperial",
 }
 
-_BEHAVIORS = {
+_WORK_MODES = {
     "on-demand",
     "polling",
 }

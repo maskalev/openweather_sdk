@@ -23,8 +23,8 @@ class InvalidLocationException(ClientBaseException):
 
 
 class AttributeValidationException(ClientBaseException):
-    def __init__(self, name, values):
-        super().__init__(f"{name} must be one of {', '.join(values)}")
+    def __init__(self, message):
+        super().__init__(message)
 
 
 class UnexpectedException(ClientBaseException):

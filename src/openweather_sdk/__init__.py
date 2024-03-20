@@ -10,12 +10,15 @@ from openweather_sdk.exceptions import (
     ClientDoesntExistException,
     InvalidLocationException,
 )
-from openweather_sdk.globals import _BEHAVIORS, _LANGUAGES, _UNITS
+from openweather_sdk.globals import _LANGUAGES, _UNITS, _WORK_MODES
 from openweather_sdk.json_processor import _JSONProcessor
 from openweather_sdk.rest.geocoding import _GeocodingAPI
 from openweather_sdk.rest.openweather import _OpenWeather
 from openweather_sdk.rest.weather import _WeatherAPI
-from openweather_sdk.validators import _validate_attr
+from openweather_sdk.validators import (
+    _validate_non_negative_integer_attr,
+    _validate_selected_attr,
+)
 
 warnings.filterwarnings("always", category=DeprecationWarning, module="openweather_sdk")
 
@@ -53,7 +56,6 @@ class Client:
             cache_size (int, optional): max size of cache. Defaults to 10.
             ttl (int, optional): the time (in sec) during which the information is considered relevant. Defaults to 600.
         """
-        self.token = token
         self.mode = mode
         self.language = language
         self.units = units
@@ -61,6 +63,9 @@ class Client:
         self.ttl = ttl
         self.cache = _ClientCache(self.cache_size, self.ttl, self.mode)
         self.lock = Lock()
+        self.token = (
+            token  # must be last to be sure that all other attributes are valid
+        )
 
         if self.mode == "polling":
             self.polling_thread = Thread(target=self._polling)
@@ -72,7 +77,7 @@ class Client:
 
     @property
     def mode(self):
-        return self._behavior
+        return self._mode
 
     @property
     def language(self):
@@ -82,6 +87,14 @@ class Client:
     def units(self):
         return self._units
 
+    @property
+    def cache_size(self):
+        return self._cache_size
+
+    @property
+    def ttl(self):
+        return self._ttl
+
     @token.setter
     def token(self, value):
         if hasattr(self, "_token"):
@@ -90,15 +103,23 @@ class Client:
 
     @mode.setter
     def mode(self, value):
-        self._behavior = _validate_attr(value, _BEHAVIORS)
+        self._mode = _validate_selected_attr(value, _WORK_MODES)
 
     @language.setter
     def language(self, value):
-        self._language = _validate_attr(value, _LANGUAGES)
+        self._language = _validate_selected_attr(value, _LANGUAGES)
 
     @units.setter
     def units(self, value):
-        self._units = _validate_attr(value, _UNITS)
+        self._units = _validate_selected_attr(value, _UNITS)
+
+    @cache_size.setter
+    def cache_size(self, value):
+        self._cache_size = _validate_non_negative_integer_attr(value)
+
+    @ttl.setter
+    def ttl(self, value):
+        self._ttl = _validate_non_negative_integer_attr(value)
 
     @property
     def is_alive(self):
@@ -143,16 +164,18 @@ class Client:
         return self._get_current_weather_coordinates(lon, lat)
 
     def _get_current_weather_coordinates(self, lon, lat):
-        with self.lock:
-            if self.cache._is_relevant_info(lon, lat):
-                return self.cache._get_info(lon, lat)
+        if self.cache_size:
+            with self.lock:
+                if self.cache._is_relevant_info(lon, lat):
+                    return self.cache._get_info(lon, lat)
 
         weather_api = _WeatherAPI(lon=lon, lat=lat, appid=self.token)
         weather = weather_api._get_current_wheather()
 
-        with self.lock:
-            self.cache._add_info(lon, lat, weather)
-            return weather
+        if self.cache_size:
+            with self.lock:
+                self.cache._add_info(lon, lat, weather)
+                return weather
 
     def _polling(self):
         while self.is_alive:

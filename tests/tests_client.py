@@ -1,7 +1,7 @@
 import sys
+import warnings
 from pathlib import Path
 from unittest import mock
-import warnings
 
 import pytest
 
@@ -11,11 +11,15 @@ sys.path.append(f"{__FILE_PATH__}/src")
 from fixtures import WEATHER_API_CORRECT_DATA
 
 from openweather_sdk import Client
-from openweather_sdk.exceptions import (ClientAlreadyExistsException,
-                                        ClientDoesntExistException)
+from openweather_sdk.exceptions import (
+    AttributeValidationException,
+    ClientAlreadyExistsException,
+    ClientDoesntExistException,
+)
 
 if sys.version_info < (3, 8):
     mock._magics.add("__round__")
+
 
 @pytest.fixture
 def weather_client():
@@ -26,7 +30,7 @@ def weather_client():
 
 
 class TestClient:
-    def test_client_initialization(self, weather_client):
+    def test_correct_client_initialization(self, weather_client):
         assert weather_client.is_alive
         assert weather_client.token in Client._active_tokens
         assert weather_client.mode == "on-demand"
@@ -45,8 +49,21 @@ class TestClient:
         with pytest.raises(ClientAlreadyExistsException):
             client = Client(token="token")
             Client(token="token")
-        client.token = "another_token"
-        Client(token="token")
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", mode="mode")
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", language="qq")
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", units="units")
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", cache_size=0)
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", cache_size="1")
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", ttl=0)
+        with pytest.raises(AttributeValidationException):
+            Client(token="another_token", ttl="1")
+        Client(token="another_token")
 
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
     @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
@@ -72,7 +89,6 @@ class TestClient:
         weather_data = weather_client._get_current_weather_coordinates(*coordinates)
         assert weather_data == WEATHER_API_CORRECT_DATA
 
-
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._zip")
     @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
     def test_get_zip_weather(
@@ -88,7 +104,7 @@ class TestClient:
             "name": "Paris",
             "lat": 48.8588897,
             "lon": 2.3200410217200766,
-            "country": "FR"
+            "country": "FR",
         }
         mock_get_coordinates.side_effect = mock_response_coordinates
         coordinates = weather_client._get_zip_code_coordinates("75000,FR")
@@ -119,7 +135,6 @@ class TestClient:
         weather_data = weather_client._get_current_weather_coordinates(*coordinates)
         assert weather_data == WEATHER_API_CORRECT_DATA
 
-
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._zip")
     @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
     def test_current_weather_zip_code(
@@ -131,7 +146,7 @@ class TestClient:
             "name": "Paris",
             "lat": 48.8588897,
             "lon": 2.3200410217200766,
-            "country": "FR"
+            "country": "FR",
         }
         mock_get_coordinates.side_effect = mock_response_coordinates
         coordinates = weather_client._get_zip_code_coordinates("75000,FR")
