@@ -47,4 +47,6 @@ push = true
     'current_version = "{version}"',
     'version = "{version}"',
 ]
-"src/openweather_sdk/__init__.py" = ["{version}"]
+"src/openweather_sdk/__init__.py" = [
+    '__version__ = "{version}"'
+]
