@@ -103,8 +103,8 @@ The `get_location_weather` method will be deprecated in
 [version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
 Starting from version 0.3.2, it is recommended to use the `current_weather`
-method with the city name as an argument, and optionally the state code (only
-for the US) and country code, separated by commas.
+method with the city name as an `location` argument, and optionally the state
+code (only for the US) and country code, separated by commas.
 
 ```bash
 >>> c = Client(token=<YOUR_TOKEN>)
@@ -128,7 +128,8 @@ The `get_zip_weather` method will be deprecated in
 [version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
 Starting from version 0.3.2, it is recommended to use the `current_weather`
-method with an argument zip/post code and country code divided by comma.
+method with an `zip_code` argument zip/post code and country code divided by
+comma.
 
 ```bash
 >>> c = Client(token=<YOUR_TOKEN>)
