@@ -14,6 +14,8 @@ from openweather_sdk import Client
 from openweather_sdk.exceptions import (ClientAlreadyExistsException,
                                         ClientDoesntExistException)
 
+if sys.version_info < (3, 8):
+    mock._magics.add("__round__")
 
 @pytest.fixture
 def weather_client():
