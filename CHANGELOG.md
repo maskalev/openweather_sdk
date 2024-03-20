@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+
+- `get_location_weather` method will be deprecated in version 1.0.0.
+  
+- `get_zip_weather` method will be deprecated in version 1.0.0.
+
+- `compact_mode` will be deprecated in version 1.0.0.
+
+## [0.3.2] - 2024-03-20
+
 ### Added
 
 - `current_weather` method to enable weather requests based on either
