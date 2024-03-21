@@ -108,7 +108,6 @@ class TestClient:
         with pytest.raises(ClientDoesntExistException):
             weather_client.get_location_weather(location="Paris")
 
-
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._zip")
     @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
     def test_get_zip_weather(
@@ -145,9 +144,7 @@ class TestClient:
             weather_client.get_zip_weather(zip_code="75000,FR")
 
     @mock.patch("openweather_sdk.rest.openweather._OpenWeather._health_check")
-    def test_health_check(
-        self, mock_health_check, weather_client
-    ):
+    def test_health_check(self, mock_health_check, weather_client):
         mock_response_health_check = mock.Mock()
         mock_response_health_check.return_value = 200
         mock_health_check.side_effect = mock_response_health_check
