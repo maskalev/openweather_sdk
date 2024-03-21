@@ -1,8 +1,15 @@
+import sys
+from pathlib import Path
+
 import freezegun
 import pytest
 
+__FILE_PATH__ = Path(__file__).parent.parent.absolute()
+sys.path.append(f"{__FILE_PATH__}/src")
+
+from fixtures import WEATHER_API_CORRECT_DATA
+
 from openweather_sdk.cache import _ClientCache
-from tests.fixtures import WEATHER_API_CORRECT_DATA
 
 
 @pytest.fixture

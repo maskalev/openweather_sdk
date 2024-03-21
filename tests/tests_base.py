@@ -1,8 +1,15 @@
 import json
+import sys
+from pathlib import Path
 from unittest import mock
 
 import pytest
 import requests
+
+__FILE_PATH__ = Path(__file__).parent.parent.absolute()
+sys.path.append(f"{__FILE_PATH__}/src")
+
+from fixtures import WEATHER_API_CORRECT_DATA
 
 from openweather_sdk.exceptions import BadResponseException
 from openweather_sdk.globals import _DOMAIN
@@ -12,7 +19,6 @@ from openweather_sdk.rest.base import (
     _create_params,
     _create_path,
 )
-from tests.fixtures import WEATHER_API_CORRECT_DATA
 
 
 @pytest.fixture

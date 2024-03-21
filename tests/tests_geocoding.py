@@ -1,10 +1,17 @@
+import sys
+from pathlib import Path
 from unittest import mock
 
 import pytest
 
+__FILE_PATH__ = Path(__file__).parent.parent.absolute()
+sys.path.append(f"{__FILE_PATH__}/src")
+
+
+from fixtures import GEOCODIND_API_DIRECT_DATA, GEOCODIND_API_ZIP_DATA
+
 from openweather_sdk.exceptions import InvalidLocationException
 from openweather_sdk.rest.geocoding import _GeocodingAPI
-from tests.fixtures import GEOCODIND_API_DIRECT_DATA, GEOCODIND_API_ZIP_DATA
 
 
 @pytest.fixture
