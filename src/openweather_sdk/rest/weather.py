@@ -1,5 +1,5 @@
 from openweather_sdk.globals import _WEATHER_API_VERSIONS
-from openweather_sdk.rest.base import _APIRequest, _build_full_path, _create_path
+from openweather_sdk.rest.base import _APIRequest, _build_url
 from openweather_sdk.validators import _validate_selected_attr
 
 
@@ -36,7 +36,5 @@ class _WeatherAPI:
             "units": self.units,
             "lang": self.language,
         }
-        path = _create_path(self.service_name, self.version, end_point)
-        path_data = {"path": path, "query_params": query_params}
-        full_path = _build_full_path(path_data)
-        return _APIRequest(full_path)._get_data()
+        url = _build_url(self.service_name, self.version, end_point, query_params)
+        return _APIRequest(url)._get_data()

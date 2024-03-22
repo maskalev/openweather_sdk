@@ -52,3 +52,8 @@ push = true
 "src/openweather_sdk/__init__.py" = [
     '__version__ = "{version}"'
 ]
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*"
+]

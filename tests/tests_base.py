@@ -15,7 +15,8 @@ from openweather_sdk.exceptions import BadResponseException
 from openweather_sdk.globals import _DOMAIN
 from openweather_sdk.rest.base import (
     _APIRequest,
-    _build_full_path,
+    _assemble_full_path,
+    _build_url,
     _create_params,
     _create_path,
 )
@@ -73,14 +74,25 @@ def test_create_params():
     assert _create_params(query_params) == "param1=value1&param2=value2"
 
 
-def test_build_full_path():
+def test_assemble_full_path():
     path_data = {
         "path": _DOMAIN,
         "query_params": {"param1": "value1", "param2": "value2"},
     }
-    assert _build_full_path(path_data) == f"{_DOMAIN}?param1=value1&param2=value2"
+    assert _assemble_full_path(path_data) == f"{_DOMAIN}?param1=value1&param2=value2"
 
 
 def test_create_path():
     segments = ("segment1", "segment2")
     assert _create_path(*segments) == f"{_DOMAIN}segment1/segment2"
+
+
+def test_build_url():
+    service_name = "service_name"
+    version = "version"
+    end_point = "end_point"
+    query_params = {"param1": "value1", "param2": "value2"}
+    assert (
+        _build_url(service_name, version, end_point, query_params)
+        == f"{_DOMAIN}service_name/version/end_point?param1=value1&param2=value2"
+    )

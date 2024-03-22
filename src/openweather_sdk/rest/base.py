@@ -22,10 +22,16 @@ def _create_path(*segments):
     return f"{_DOMAIN}{path}"
 
 
-def _build_full_path(path_data):
+def _assemble_full_path(path_data):
     path = path_data["path"]
     params = _create_params(path_data["query_params"])
     return f"{path}?{params}"
+
+
+def _build_url(service_name, version, end_point, query_params):
+    path = _create_path(service_name, version, end_point)
+    path_data = {"path": path, "query_params": query_params}
+    return _assemble_full_path(path_data)
 
 
 class _APIRequest:

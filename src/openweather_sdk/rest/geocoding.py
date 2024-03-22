@@ -1,6 +1,6 @@
 from openweather_sdk.exceptions import InvalidLocationException
 from openweather_sdk.globals import _GEOCODING_API_VERSIONS
-from openweather_sdk.rest.base import _APIRequest, _build_full_path, _create_path
+from openweather_sdk.rest.base import _APIRequest, _build_url
 from openweather_sdk.validators import _validate_selected_attr
 
 
@@ -30,11 +30,9 @@ class _GeocodingAPI:
         """Get geographical data by using name of the location (city name or area name)."""
         end_point = "direct"
         query_params = {"q": self.location, "limit": self.limit, "appid": self.appid}
-        path = _create_path(self.service_name, self.version, end_point)
-        path_data = {"path": path, "query_params": query_params}
-        full_path = _build_full_path(path_data)
+        url = _build_url(self.service_name, self.version, end_point, query_params)
         try:
-            result = _APIRequest(full_path)._get_data()
+            result = _APIRequest(url)._get_data()
             return result[0]
         except IndexError as e:
             raise InvalidLocationException(
@@ -45,11 +43,9 @@ class _GeocodingAPI:
         """Get geographical coordinates (lon, lat) by using zip/post code"""
         end_point = "zip"
         query_params = {"zip": self.zip_code, "appid": self.appid}
-        path = _create_path(self.service_name, self.version, end_point)
-        path_data = {"path": path, "query_params": query_params}
-        full_path = _build_full_path(path_data)
+        url = _build_url(self.service_name, self.version, end_point, query_params)
         try:
-            return _APIRequest(full_path)._get_data()
+            return _APIRequest(url)._get_data()
         except Exception as e:
             raise InvalidLocationException(
                 "Check if zip code is specified correctly."
