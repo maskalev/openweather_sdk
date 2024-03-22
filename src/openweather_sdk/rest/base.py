@@ -1,10 +1,15 @@
 import json
+import logging
 from urllib.parse import urlencode
 
 import requests
 
 from openweather_sdk.exceptions import BadResponseException, UnexpectedException
 from openweather_sdk.globals import _DOMAIN
+from openweather_sdk.logger_filters import TokenFilter
+
+logger = logging.getLogger(__name__)
+logger.addFilter(TokenFilter())
 
 
 def _create_params(query_params):
@@ -39,18 +44,25 @@ class _APIRequest:
                 response.status_code, json.loads(response.content)["message"]
             ) from e
         except requests.Timeout as e:
+            logger.warning(e)
             raise
         except requests.ConnectionError as e:
+            logger.warning(e)
             raise
         except requests.RequestException as e:
+            logger.warning(e)
             raise
         except Exception as e:
+            logger.warning(e)
             raise UnexpectedException(e) from e
 
     def _get_data(self):
         response = self._get()
-        return json.loads(response.content)
+        content = response.content
+        return json.loads(content)
 
     def _health_check(self):
         response = self._get()
-        return response.status_code
+        status_code = response.status_code
+        logger.info(f"Health checking's status: {status_code}")
+        return status_code

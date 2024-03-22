@@ -23,6 +23,8 @@ saved (previously requested) cities.
 
 [Description of response formats](#description-of-response-formats)
 
+[Logging](#logging)
+
 [Usage example](#usage-example)
 
 [Errors](#errors)
@@ -257,6 +259,17 @@ Imperial: miles/hour.
 Description of full format see
 [here](https://openweathermap.org/current#fields_json)
 
+## Logging
+
+When using logging, be careful: the `urllib3` library logs sensitive
+information (such as API access tokens) when the DEBUG level is enabled!
+
+To disable logging from the `urllib3` library in your project, use this:
+
+```python
+import logging
+logging.getLogger("urllib3").propagate = False
+```
 
 ## Usage example
 

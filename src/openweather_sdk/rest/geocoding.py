@@ -37,7 +37,9 @@ class _GeocodingAPI:
             result = _APIRequest(full_path)._get_data()
             return result[0]
         except IndexError as e:
-            raise InvalidLocationException from e
+            raise InvalidLocationException(
+                "Check if the location is specified correctly."
+            ) from e
 
     def _zip(self):
         """Get geographical coordinates (lon, lat) by using zip/post code"""
@@ -49,7 +51,9 @@ class _GeocodingAPI:
         try:
             return _APIRequest(full_path)._get_data()
         except Exception as e:
-            raise InvalidLocationException from e
+            raise InvalidLocationException(
+                "Check if zip code is specified correctly."
+            ) from e
 
     def _reverse(self):
         """Get name of the location (city name or area name) by using geografical coordinates (lon, lat)."""

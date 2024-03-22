@@ -1,5 +1,6 @@
 __version__ = "0.3.2"
 
+import logging
 import time
 import warnings
 from threading import Lock, Thread
@@ -21,6 +22,10 @@ from openweather_sdk.validators import (
 )
 
 warnings.filterwarnings("always", category=DeprecationWarning, module="openweather_sdk")
+
+logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+logger = logging.getLogger(__name__)
 
 
 class Client:
@@ -56,6 +61,7 @@ class Client:
             cache_size (int, optional): max size of cache. Defaults to 10.
             ttl (int, optional): the time (in sec) during which the information is considered relevant. Defaults to 600.
         """
+        logger.info(f"Client {token[:4]}...{token[-4:]} is being initialized...")
         self.mode = mode
         self.language = language
         self.units = units
@@ -70,6 +76,13 @@ class Client:
         if self.mode == "polling":
             self.polling_thread = Thread(target=self._polling)
             self.polling_thread.start()
+
+        logger.info(
+            f"Client {self} was initialized with params: mode = {self.mode}, language = {self.language}, units = {self.units}, cache_size = {self.cache_size}, ttl = {self.ttl}."
+        )
+
+    def __str__(self):
+        return f"{self.token[:4]}...{self.token[-4:]}"
 
     @property
     def token(self):
@@ -127,16 +140,19 @@ class Client:
 
     def remove(self):
         """Remove the current client."""
+        logger.info(f"The client {self} is being removed...")
         if self.is_alive:
             Client._active_tokens.discard(self.token)
         else:
-            raise ClientDoesntExistException
+            raise ClientDoesntExistException(self)
         if self.mode == "polling":
             self.polling_thread.join()
+        logger.info(f"Client {self} was removed")
 
     def _validate_token(self, token):
         if token in Client._active_tokens:
-            raise ClientAlreadyExistsException
+            client_token = f"{token[:4]}...{token[-4:]}"
+            raise ClientAlreadyExistsException(client_token)
         Client._active_tokens.add(token)
         return token
 
@@ -175,9 +191,13 @@ class Client:
         if self.cache_size:
             with self.lock:
                 self.cache._add_info(lon, lat, weather)
+                logger.info(
+                    f"The client {self} has received data about the current weather: {weather}"
+                )
                 return weather
 
     def _polling(self):
+        logger.info(f"The client {self} initiated the polling.")
         while self.is_alive:
             time.sleep(self.cache.ttl)
             if not self.cache.cache:
@@ -190,6 +210,7 @@ class Client:
                 with self.lock:
                     weather = weather_api._get_current_wheather()
                     self.cache._update_info(lon, lat, weather)
+        logger.info(f"The client {self} has completed the polling.")
 
     def get_location_weather(self, location, compact_mode=True):
         """
@@ -201,10 +222,15 @@ class Client:
             location (str): city name, state code (only for the US) and country code divided by comma.
             compact_mode (bool, optional): Determines whether to return the response in a compact format. Defaults to True.
         """
+        logger.info(
+            f"The client {self} is being requested the current weather in the location {location}..."
+        )
         if not self.is_alive:
-            raise ClientDoesntExistException
+            raise ClientDoesntExistException(self)
         if not isinstance(location, str):
-            raise InvalidLocationException
+            raise InvalidLocationException(
+                "You need to specify the location as a string"
+            )
         weather = self._get_location_current_weather(location)
         json_processor = _JSONProcessor(weather, compact_mode)
         warnings.warn(
@@ -222,10 +248,13 @@ class Client:
             zip_code (str): zip/post code and country code divided by comma.
             compact_mode (bool, optional): Determines whether to return the response in a compact format. Defaults to True.
         """
+        logger.info(
+            f"The client {self} is being requested the current weather in the location {zip_code}..."
+        )
         if not self.is_alive:
-            raise ClientDoesntExistException
+            raise ClientDoesntExistException(self)
         if not isinstance(zip_code, str):
-            raise InvalidLocationException
+            raise InvalidLocationException("You need to specify zip code as a string")
         weather = self._get_zip_code_current_weather(zip_code)
         json_processor = _JSONProcessor(weather, compact_mode)
         warnings.warn(
@@ -246,21 +275,31 @@ class Client:
             location (str, optional): city name, state code (only for the US) and country code divided by comma.
             zip_code (str, optional): zip/post code and country code divided by comma.
         """
+        logger.info(
+            f"The client {self} is being requested the current weather in the location {location or zip_code}..."
+        )
         if not self.is_alive:
-            raise ClientDoesntExistException
+            raise ClientDoesntExistException(self)
         if not location and not zip_code:
-            raise InvalidLocationException
+            raise InvalidLocationException(
+                "You need to specify the location or postal code."
+            )
         if location:
             if not isinstance(location, str):
-                raise InvalidLocationException
+                raise InvalidLocationException(
+                    "You need to specify the location as a string."
+                )
             return self._get_location_current_weather(location)
         if zip_code:
             if not isinstance(zip_code, str):
-                raise InvalidLocationException
+                raise InvalidLocationException(
+                    "You need to specify zip code as a string"
+                )
             return self._get_zip_code_current_weather(zip_code)
 
     def health_check(self):
         """Check if available API service."""
+        logger.info(f"The client {self} is being health checking...")
         if not self.is_alive:
-            raise ClientDoesntExistException
+            raise ClientDoesntExistException(self)
         return _OpenWeather()._health_check()
