@@ -216,28 +216,28 @@ class Client:
                     self.cache["current_weather"]._update_info(lon, lat, weather)
         logger.info(f"The client {self} has completed the polling.")
 
-    def _get_location_forecast_5_day(self, location):
+    def _get_location_forecast_5_days(self, location):
         lon, lat = self._get_location_coordinates(location)
-        return self._get_forecast_5_day(lon, lat)
+        return self._get_forecast_5_days(lon, lat)
 
-    def _get_zip_code_forecast_5_day(self, zip_code):
+    def _get_zip_code_forecast_5_days(self, zip_code):
         lon, lat = self._get_zip_code_coordinates(zip_code)
-        return self._get_forecast_5_day(lon, lat)
+        return self._get_forecast_5_days(lon, lat)
 
-    def _get_forecast_5_day(self, lon, lat):
+    def _get_forecast_5_days(self, lon, lat):
         if self.cache_size:
             with self.lock:
-                if self.cache["forecast_5_day"]._is_relevant_info(lon, lat):
-                    return self.cache["forecast_5_day"]._get_info(lon, lat)
+                if self.cache["forecast_5_days"]._is_relevant_info(lon, lat):
+                    return self.cache["forecast_5_days"]._get_info(lon, lat)
 
         forecast_api = _ForecastAPI(lon=lon, lat=lat, appid=self.token)
-        forecast = forecast_api._get_forecast_5_day()
+        forecast = forecast_api._get_forecast_5_days()
 
         if self.cache_size:
             with self.lock:
-                self.cache["forecast_5_day"]._add_info(lon, lat, forecast)
+                self.cache["forecast_5_days"]._add_info(lon, lat, forecast)
                 logger.info(
-                    f"The client {self} has received data about forecast on 5 day: {forecast}"
+                    f"The client {self} has received data about 5 day forecast: {forecast}"
                 )
                 return forecast
 
@@ -263,6 +263,31 @@ class Client:
                 self.cache["forecast_hourly"]._add_info(lon, lat, forecast)
                 logger.info(
                     f"The client {self} has received data about hourly forecast: {forecast}"
+                )
+                return forecast
+
+    def _get_location_forecast_daily_16_days(self, location):
+        lon, lat = self._get_location_coordinates(location)
+        return self._get_forecast_daily_16_days(lon, lat)
+
+    def _get_zip_code_forecast_daily_16_days(self, zip_code):
+        lon, lat = self._get_zip_code_coordinates(zip_code)
+        return self._get_forecast_daily_16_days(lon, lat)
+
+    def _get_forecast_daily_16_days(self, lon, lat):
+        if self.cache_size:
+            with self.lock:
+                if self.cache["forecast_16_days"]._is_relevant_info(lon, lat):
+                    return self.cache["forecast_16_days"]._get_info(lon, lat)
+
+        forecast_api = _ForecastAPI(lon=lon, lat=lat, appid=self.token)
+        forecast = forecast_api._get_forecast_daily_16_days()
+
+        if self.cache_size:
+            with self.lock:
+                self.cache["forecast_16_days"]._add_info(lon, lat, forecast)
+                logger.info(
+                    f"The client {self} has received data about 16 days forecast: {forecast}"
                 )
                 return forecast
 
@@ -358,7 +383,7 @@ class Client:
             raise ClientDoesntExistException(self)
         return _OpenWeather()._health_check()
 
-    def forecast_5_day(self, location=None, zip_code=None):
+    def forecast_5_days(self, location=None, zip_code=None):
         """
         Returns 5 day weather forecast data with 3-hour step at specified location.
         The location can be provided either as a combination of city name,
@@ -384,13 +409,13 @@ class Client:
                 raise InvalidLocationException(
                     "You need to specify the location as a string."
                 )
-            return self._get_location_forecast_5_day(location)
+            return self._get_location_forecast_5_days(location)
         if zip_code:
             if not isinstance(zip_code, str):
                 raise InvalidLocationException(
                     "You need to specify zip code as a string"
                 )
-            return self._get_zip_code_forecast_5_day(zip_code)
+            return self._get_zip_code_forecast_5_days(zip_code)
 
     def forecast_hourly(self, location=None, zip_code=None):
         """
@@ -427,3 +452,39 @@ class Client:
                     "You need to specify zip code as a string"
                 )
             return self._get_zip_code_forecast_hourly(zip_code)
+
+    def forecast_daily_16_days(self, location=None, zip_code=None):
+        """
+        Returns 16 day weather forecast data at specified location.
+        The location can be provided either as a combination of city name,
+        state code (for the US), and country code separated by commas, or
+        as a combination of zip/post code and country code separated by commas.
+        Please ensure the usage of ISO 3166 country codes.
+
+        Accessible with a "Startup" subscription and higher. See: https://openweathermap.org/full-price.
+
+        Args:
+            location (str, optional): city name, state code (only for the US) and country code divided by comma.
+            zip_code (str, optional): zip/post code and country code divided by comma.
+        """
+        logger.info(
+            f"The client {self} is being requested 5 day forecast in the location {location or zip_code}..."
+        )
+        if not self.is_alive:
+            raise ClientDoesntExistException(self)
+        if not location and not zip_code:
+            raise InvalidLocationException(
+                "You need to specify the location or postal code."
+            )
+        if location:
+            if not isinstance(location, str):
+                raise InvalidLocationException(
+                    "You need to specify the location as a string."
+                )
+            return self._get_location_forecast_daily_16_days(location)
+        if zip_code:
+            if not isinstance(zip_code, str):
+                raise InvalidLocationException(
+                    "You need to specify zip code as a string"
+                )
+            return self._get_zip_code_forecast_daily_16_days(zip_code)

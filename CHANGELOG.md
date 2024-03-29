@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `forecast_5_day` method to enable 5 day forecast requests based on either
+- `forecast_5_days` method to enable 5 day forecast requests based on either
   location name or zip/postal code.
 
 - `forecast_hourly` method to enable hourly forecast requests based on either
+  location name or zip/postal code.
+
+- `forecast_daily_16_days` method to enable daily forecast requests based on either
   location name or zip/postal code.
 
 ### Deprecated
