@@ -77,8 +77,13 @@ _SPECIFIC_CACHES = [
     "forecast_5_days",
     "forecast_16_days",
     "forecast_30_days",
+    "current_air_pollution"
 ]
 
 _FORECAST_API_VERSIONS = {
+    "2.5",
+}
+
+_AIR_POLLUTION_API_VERSIONS = {
     "2.5",
 }

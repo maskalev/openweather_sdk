@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `forecast_daily_30_days` method to enable 30 days forecast requests based on either
   location name or zip/postal code.
 
+- `current_air_pollution` method to enable current air pollution requests based on either
+  location name or zip/postal code.
+
 ### Deprecated
 
 - `get_location_weather` method will be deprecated in version 1.0.0.

@@ -7,8 +7,9 @@ class _ForecastAPI:
     """
     A class for creating data for path buildng to Forecast API.
     See: https://openweathermap.org/forecast5,
-    https://openweathermap.org/api/hourly-forecast or
-    https://openweathermap.org/forecast16.
+    https://openweathermap.org/api/hourly-forecast,
+    https://openweathermap.org/forecast16 or
+    https://openweathermap.org/api/forecast30.
     """
 
     def __init__(self, lon, lat, appid, **kwargs):
