@@ -6,7 +6,7 @@ def _get_cur_time():
 
 
 class _ClientCache:
-    """A class to work with client's cache"""
+    """A class to work with specific client's cache."""
 
     def __init__(self, max_size, ttl, mode):
         self.cache = {}

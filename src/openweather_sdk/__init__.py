@@ -11,8 +11,9 @@ from openweather_sdk.exceptions import (
     ClientDoesntExistException,
     InvalidLocationException,
 )
-from openweather_sdk.globals import _LANGUAGES, _UNITS, _WORK_MODES
+from openweather_sdk.globals import _LANGUAGES, _SPECIFIC_CACHES, _UNITS, _WORK_MODES
 from openweather_sdk.json_processor import _JSONProcessor
+from openweather_sdk.rest.forecast import _ForecastAPI
 from openweather_sdk.rest.geocoding import _GeocodingAPI
 from openweather_sdk.rest.openweather import _OpenWeather
 from openweather_sdk.rest.weather import _WeatherAPI
@@ -67,7 +68,10 @@ class Client:
         self.units = units
         self.cache_size = cache_size
         self.ttl = ttl
-        self.cache = _ClientCache(self.cache_size, self.ttl, self.mode)
+        self.cache = {
+            cache: _ClientCache(self.cache_size, self.ttl, self.mode)
+            for cache in _SPECIFIC_CACHES
+        }
         self.lock = Lock()
         self.token = (
             token  # must be last to be sure that all other attributes are valid
@@ -173,24 +177,24 @@ class Client:
 
     def _get_location_current_weather(self, location):
         lon, lat = self._get_location_coordinates(location)
-        return self._get_current_weather_coordinates(lon, lat)
+        return self._get_current_weather(lon, lat)
 
     def _get_zip_code_current_weather(self, zip_code):
         lon, lat = self._get_zip_code_coordinates(zip_code)
-        return self._get_current_weather_coordinates(lon, lat)
+        return self._get_current_weather(lon, lat)
 
-    def _get_current_weather_coordinates(self, lon, lat):
+    def _get_current_weather(self, lon, lat):
         if self.cache_size:
             with self.lock:
-                if self.cache._is_relevant_info(lon, lat):
-                    return self.cache._get_info(lon, lat)
+                if self.cache["current_weather"]._is_relevant_info(lon, lat):
+                    return self.cache["current_weather"]._get_info(lon, lat)
 
         weather_api = _WeatherAPI(lon=lon, lat=lat, appid=self.token)
         weather = weather_api._get_current_wheather()
 
         if self.cache_size:
             with self.lock:
-                self.cache._add_info(lon, lat, weather)
+                self.cache["current_weather"]._add_info(lon, lat, weather)
                 logger.info(
                     f"The client {self} has received data about the current weather: {weather}"
                 )
@@ -200,17 +204,42 @@ class Client:
         logger.info(f"The client {self} initiated the polling.")
         while self.is_alive:
             time.sleep(self.cache.ttl)
-            if not self.cache.cache:
+            if not self.cache["current_weather"]:
                 continue
-            coordinates = list(self.cache.cache.keys())
+            coordinates = list(self.cache["current_weather"].keys())
             for lon, lat in coordinates:
-                if (lon, lat) not in self.cache.cache:
+                if (lon, lat) not in self.cache["current_weather"]:
                     continue
                 weather_api = _WeatherAPI(lon=lon, lat=lat, appid=self.token)
                 with self.lock:
                     weather = weather_api._get_current_wheather()
-                    self.cache._update_info(lon, lat, weather)
+                    self.cache["current_weather"]._update_info(lon, lat, weather)
         logger.info(f"The client {self} has completed the polling.")
+
+    def _get_location_forecast_5_day(self, location):
+        lon, lat = self._get_location_coordinates(location)
+        return self._get_forecast_5_day(lon, lat)
+
+    def _get_zip_code_forecast_5_day(self, zip_code):
+        lon, lat = self._get_zip_code_coordinates(zip_code)
+        return self._get_forecast_5_day(lon, lat)
+
+    def _get_forecast_5_day(self, lon, lat):
+        if self.cache_size:
+            with self.lock:
+                if self.cache["forecast_5_day"]._is_relevant_info(lon, lat):
+                    return self.cache["forecast_5_day"]._get_info(lon, lat)
+
+        forecast_api = _ForecastAPI(lon=lon, lat=lat, appid=self.token)
+        forecast = forecast_api._get_5_day_forecast()
+
+        if self.cache_size:
+            with self.lock:
+                self.cache["forecast_5_day"]._add_info(lon, lat, forecast)
+                logger.info(
+                    f"The client {self} has received data about forecast on 5 day: {forecast}"
+                )
+                return forecast
 
     def get_location_weather(self, location, compact_mode=True):
         """
@@ -303,3 +332,37 @@ class Client:
         if not self.is_alive:
             raise ClientDoesntExistException(self)
         return _OpenWeather()._health_check()
+
+    def forecast_5_day(self, location=None, zip_code=None):
+        """
+        Returns 5 day weather forecast data with 3-hour step at specified location.
+        The location can be provided either as a combination of city name,
+        state code (for the US), and country code separated by commas, or
+        as a combination of zip/post code and country code separated by commas.
+        Please ensure the usage of ISO 3166 country codes.
+
+        Args:
+            location (str, optional): city name, state code (only for the US) and country code divided by comma.
+            zip_code (str, optional): zip/post code and country code divided by comma.
+        """
+        logger.info(
+            f"The client {self} is being requested 5 day forecast in the location {location or zip_code}..."
+        )
+        if not self.is_alive:
+            raise ClientDoesntExistException(self)
+        if not location and not zip_code:
+            raise InvalidLocationException(
+                "You need to specify the location or postal code."
+            )
+        if location:
+            if not isinstance(location, str):
+                raise InvalidLocationException(
+                    "You need to specify the location as a string."
+                )
+            return self._get_location_forecast_5_day(location)
+        if zip_code:
+            if not isinstance(zip_code, str):
+                raise InvalidLocationException(
+                    "You need to specify zip code as a string"
+                )
+            return self._get_zip_code_forecast_5_day(zip_code)
