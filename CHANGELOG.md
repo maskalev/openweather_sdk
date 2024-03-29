@@ -9,20 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `forecast_5_days` method to enable 5 day forecast requests based on either
-  location name or zip/postal code.
+- `weather_forecast_5_days` method to enable 5 day weather forecast requests based on
+  either location name or zip/postal code.
 
-- `forecast_hourly` method to enable hourly forecast requests based on either
-  location name or zip/postal code.
+- `weather_forecast_hourly` method to enable hourly weather forecast requests based on
+  either location name or zip/postal code.
 
-- `forecast_daily_16_days` method to enable 16 days forecast requests based on either
-  location name or zip/postal code.
+- `weather_forecast_daily_16_days` method to enable 16 days weather forecast requests
+  based on either location name or zip/postal code.
 
-- `forecast_daily_30_days` method to enable 30 days forecast requests based on either
-  location name or zip/postal code.
+- `weather_forecast_daily_30_days` method to enable 30 days weather forecast requests
+  based on either location name or zip/postal code.
 
-- `current_air_pollution` method to enable current air pollution requests based on either
-  location name or zip/postal code.
+- `current_air_pollution` method to enable current air pollution requests based
+  on either location name or zip/postal code.
+
+- `air_pollution_forecast_hourly` method to enable hourly air pollution forecast
+  requests based on either location name or zip/postal code.
 
 ### Deprecated
 

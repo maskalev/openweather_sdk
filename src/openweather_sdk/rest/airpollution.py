@@ -32,3 +32,10 @@ class _AirPollutionAPI:
         query_params = {"lat": self.lat, "lon": self.lon, "appid": self.appid}
         url = _build_url(self.service_name, self.version, end_point, query_params)
         return _APIRequest(url)._get_data()
+
+    def _get_forecast_air_pollution(self):
+        """Get hourly air pollution forecast for 4 days (96 timestamps) at the specified point."""
+        end_point = "air_pollution/forecast"
+        query_params = {"lat": self.lat, "lon": self.lon, "appid": self.appid}
+        url = _build_url(self.service_name, self.version, end_point, query_params)
+        return _APIRequest(url)._get_data()

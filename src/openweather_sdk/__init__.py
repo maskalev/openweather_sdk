@@ -342,6 +342,31 @@ class Client:
                 )
                 return air_pollution
 
+    def _get_location_forecast_air_pollution(self, location):
+        lon, lat = self._get_location_coordinates(location)
+        return self._get_forecast_air_pollution(lon, lat)
+
+    def _get_zip_code_forecast_air_pollution(self, zip_code):
+        lon, lat = self._get_zip_code_coordinates(zip_code)
+        return self._get_forecast_air_pollution(lon, lat)
+
+    def _get_forecast_air_pollution(self, lon, lat):
+        if self.cache_size:
+            with self.lock:
+                if self.cache["forecast_air_pollution"]._is_relevant_info(lon, lat):
+                    return self.cache["forecast_air_pollution"]._get_info(lon, lat)
+
+        air_pollution_api = _AirPollutionAPI(lon=lon, lat=lat, appid=self.token)
+        forecast = air_pollution_api._get_forecast_air_pollution()
+
+        if self.cache_size:
+            with self.lock:
+                self.cache["forecast_air_pollution"]._add_info(lon, lat, forecast)
+                logger.info(
+                    f"The client {self} has received data about forecast air pollution: {forecast}"
+                )
+                return forecast
+
     def get_location_weather(self, location, compact_mode=True):
         """
         Returns current weather in location (city name, state code (only for
@@ -434,7 +459,7 @@ class Client:
             raise ClientDoesntExistException(self)
         return _OpenWeather()._health_check()
 
-    def forecast_5_days(self, location=None, zip_code=None):
+    def weather_forecast_5_days(self, location=None, zip_code=None):
         """
         Returns 5 days weather forecast data with 3-hour step at specified location.
         The location can be provided either as a combination of city name,
@@ -468,9 +493,9 @@ class Client:
                 )
             return self._get_zip_code_forecast_5_days(zip_code)
 
-    def forecast_hourly(self, location=None, zip_code=None):
+    def weather_forecast_hourly(self, location=None, zip_code=None):
         """
-        Returns hourly forecast for 4 days (96 timestamps) at specified location.
+        Returns hourly weather forecast for 4 days (96 timestamps) at specified location.
         The location can be provided either as a combination of city name,
         state code (for the US), and country code separated by commas, or
         as a combination of zip/post code and country code separated by commas.
@@ -504,7 +529,7 @@ class Client:
                 )
             return self._get_zip_code_forecast_hourly(zip_code)
 
-    def forecast_daily_16_days(self, location=None, zip_code=None):
+    def weather_forecast_daily_16_days(self, location=None, zip_code=None):
         """
         Returns 16 days weather forecast data at specified location.
         The location can be provided either as a combination of city name,
@@ -540,7 +565,7 @@ class Client:
                 )
             return self._get_zip_code_forecast_daily_16_days(zip_code)
 
-    def forecast_daily_30_days(self, location=None, zip_code=None):
+    def weather_forecast_daily_30_days(self, location=None, zip_code=None):
         """
         Returns 30 days weather forecast data at specified location.
         The location can be provided either as a combination of city name,
@@ -609,3 +634,37 @@ class Client:
                     "You need to specify zip code as a string"
                 )
             return self._get_zip_code_current_air_pollution(zip_code)
+
+    def air_pollution_forecast_hourly(self, location=None, zip_code=None):
+        """
+        Returns hourly air_pollution forecast for 4 days (96 timestamps) at specified location.
+        The location can be provided either as a combination of city name,
+        state code (for the US), and country code separated by commas, or
+        as a combination of zip/post code and country code separated by commas.
+        Please ensure the usage of ISO 3166 country codes.
+
+        Args:
+            location (str, optional): city name, state code (only for the US) and country code divided by comma.
+            zip_code (str, optional): zip/post code and country code divided by comma.
+        """
+        logger.info(
+            f"The client {self} is being requested the forecast air pollution in the location {location or zip_code}..."
+        )
+        if not self.is_alive:
+            raise ClientDoesntExistException(self)
+        if not location and not zip_code:
+            raise InvalidLocationException(
+                "You need to specify the location or postal code."
+            )
+        if location:
+            if not isinstance(location, str):
+                raise InvalidLocationException(
+                    "You need to specify the location as a string."
+                )
+            return self._get_location_forecast_air_pollution(location)
+        if zip_code:
+            if not isinstance(zip_code, str):
+                raise InvalidLocationException(
+                    "You need to specify zip code as a string"
+                )
+            return self._get_zip_code_forecast_air_pollution(zip_code)
