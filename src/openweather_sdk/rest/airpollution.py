@@ -29,10 +29,6 @@ class _AirPollutionAPI:
     def _get_current_air_pollution(self):
         """Get current air pollution at the specified point."""
         end_point = "air_pollution"
-        query_params = {
-            "lat": self.lat,
-            "lon": self.lon,
-            "appid": self.appid
-        }
+        query_params = {"lat": self.lat, "lon": self.lon, "appid": self.appid}
         url = _build_url(self.service_name, self.version, end_point, query_params)
         return _APIRequest(url)._get_data()

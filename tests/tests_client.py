@@ -258,7 +258,9 @@ class TestClient:
             weather_client.forecast_hourly(zip_code="75000,FR")
 
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
-    @mock.patch("openweather_sdk.rest.forecast._ForecastAPI._get_forecast_daily_16_days")
+    @mock.patch(
+        "openweather_sdk.rest.forecast._ForecastAPI._get_forecast_daily_16_days"
+    )
     def test_forecast_daily_16_days(
         self, mock_get_weather, mock_get_coordinates, weather_client
     ):
@@ -292,7 +294,9 @@ class TestClient:
             weather_client.forecast_daily_16_days(zip_code="75000,FR")
 
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
-    @mock.patch("openweather_sdk.rest.forecast._ForecastAPI._get_forecast_daily_30_days")
+    @mock.patch(
+        "openweather_sdk.rest.forecast._ForecastAPI._get_forecast_daily_30_days"
+    )
     def test_forecast_daily_30_days(
         self, mock_get_weather, mock_get_coordinates, weather_client
     ):
@@ -326,7 +330,9 @@ class TestClient:
             weather_client.forecast_daily_30_days(zip_code="75000,FR")
 
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
-    @mock.patch("openweather_sdk.rest.airpollution._AirPollutionAPI._get_current_air_pollution")
+    @mock.patch(
+        "openweather_sdk.rest.airpollution._AirPollutionAPI._get_current_air_pollution"
+    )
     def test_current_air_pollution(
         self, mock_get_weather, mock_get_coordinates, weather_client
     ):
