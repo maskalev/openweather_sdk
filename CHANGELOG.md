@@ -15,7 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `forecast_hourly` method to enable hourly forecast requests based on either
   location name or zip/postal code.
 
-- `forecast_daily_16_days` method to enable daily forecast requests based on either
+- `forecast_daily_16_days` method to enable 16 days forecast requests based on either
+  location name or zip/postal code.
+
+- `forecast_daily_30_days` method to enable 30 days forecast requests based on either
   location name or zip/postal code.
 
 ### Deprecated

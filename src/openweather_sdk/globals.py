@@ -73,9 +73,10 @@ _DOMAIN = "http://api.openweathermap.org/"
 
 _SPECIFIC_CACHES = [
     "current_weather",
-    "forecast_5_days",
     "forecast_hourly",
+    "forecast_5_days",
     "forecast_16_days",
+    "forecast_30_days",
 ]
 
 _FORECAST_API_VERSIONS = {

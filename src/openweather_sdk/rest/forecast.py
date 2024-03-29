@@ -66,3 +66,16 @@ class _ForecastAPI:
         }
         url = _build_url(self.service_name, self.version, end_point, query_params)
         return _APIRequest(url)._get_data()
+
+    def _get_forecast_daily_30_days(self):
+        """Get daily forecast for 30 days at the specified point."""
+        end_point = "forecast/climate"
+        query_params = {
+            "lat": self.lat,
+            "lon": self.lon,
+            "appid": self.appid,
+            "units": self.units,
+            "lang": self.language,
+        }
+        url = _build_url(self.service_name, self.version, end_point, query_params)
+        return _APIRequest(url)._get_data()
