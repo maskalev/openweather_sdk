@@ -231,13 +231,38 @@ class Client:
                     return self.cache["forecast_5_day"]._get_info(lon, lat)
 
         forecast_api = _ForecastAPI(lon=lon, lat=lat, appid=self.token)
-        forecast = forecast_api._get_5_day_forecast()
+        forecast = forecast_api._get_forecast_5_day()
 
         if self.cache_size:
             with self.lock:
                 self.cache["forecast_5_day"]._add_info(lon, lat, forecast)
                 logger.info(
                     f"The client {self} has received data about forecast on 5 day: {forecast}"
+                )
+                return forecast
+
+    def _get_location_forecast_hourly(self, location):
+        lon, lat = self._get_location_coordinates(location)
+        return self._get_forecast_hourly(lon, lat)
+
+    def _get_zip_code_forecast_hourly(self, zip_code):
+        lon, lat = self._get_zip_code_coordinates(zip_code)
+        return self._get_forecast_hourly(lon, lat)
+
+    def _get_forecast_hourly(self, lon, lat):
+        if self.cache_size:
+            with self.lock:
+                if self.cache["forecast_hourly"]._is_relevant_info(lon, lat):
+                    return self.cache["forecast_hourly"]._get_info(lon, lat)
+
+        forecast_api = _ForecastAPI(lon=lon, lat=lat, appid=self.token)
+        forecast = forecast_api._get_forecast_hourly()
+
+        if self.cache_size:
+            with self.lock:
+                self.cache["forecast_hourly"]._add_info(lon, lat, forecast)
+                logger.info(
+                    f"The client {self} has received data about hourly forecast: {forecast}"
                 )
                 return forecast
 
@@ -366,3 +391,39 @@ class Client:
                     "You need to specify zip code as a string"
                 )
             return self._get_zip_code_forecast_5_day(zip_code)
+
+    def forecast_hourly(self, location=None, zip_code=None):
+        """
+        Returns hourly forecast for 4 days (96 timestamps) at specified location.
+        The location can be provided either as a combination of city name,
+        state code (for the US), and country code separated by commas, or
+        as a combination of zip/post code and country code separated by commas.
+        Please ensure the usage of ISO 3166 country codes.
+
+        Accessible with a "Developer" subscription and higher. See: https://openweathermap.org/full-price.
+
+        Args:
+            location (str, optional): city name, state code (only for the US) and country code divided by comma.
+            zip_code (str, optional): zip/post code and country code divided by comma.
+        """
+        logger.info(
+            f"The client {self} is being requested hourly forecast in the location {location or zip_code}..."
+        )
+        if not self.is_alive:
+            raise ClientDoesntExistException(self)
+        if not location and not zip_code:
+            raise InvalidLocationException(
+                "You need to specify the location or postal code."
+            )
+        if location:
+            if not isinstance(location, str):
+                raise InvalidLocationException(
+                    "You need to specify the location as a string."
+                )
+            return self._get_location_forecast_hourly(location)
+        if zip_code:
+            if not isinstance(zip_code, str):
+                raise InvalidLocationException(
+                    "You need to specify zip code as a string"
+                )
+            return self._get_zip_code_forecast_hourly(zip_code)

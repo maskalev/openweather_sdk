@@ -6,7 +6,8 @@ from openweather_sdk.validators import _validate_selected_attr
 class _ForecastAPI:
     """
     A class for creating data for path buildng to Forecast API.
-    See: https://openweathermap.org/forecast5.
+    See: https://openweathermap.org/forecast5 or
+    https://openweathermap.org/api/hourly-forecast.
     """
 
     def __init__(self, lon, lat, appid, **kwargs):
@@ -26,9 +27,22 @@ class _ForecastAPI:
     def version(self, value):
         self._version = _validate_selected_attr(value, _FORECAST_API_VERSIONS)
 
-    def _get_5_day_forecast(self):
-        """Get 5 day forecast at the specified point."""
+    def _get_forecast_5_day(self):
+        """Get 5 day forecast (3-hour step) at the specified point."""
         end_point = "forecast"
+        query_params = {
+            "lat": self.lat,
+            "lon": self.lon,
+            "appid": self.appid,
+            "units": self.units,
+            "lang": self.language,
+        }
+        url = _build_url(self.service_name, self.version, end_point, query_params)
+        return _APIRequest(url)._get_data()
+
+    def _get_forecast_hourly(self):
+        """Get hourly forecast for 4 days (96 timestamps) at the specified point."""
+        end_point = "forecast/hourly"
         query_params = {
             "lat": self.lat,
             "lon": self.lon,

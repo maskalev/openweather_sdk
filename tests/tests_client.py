@@ -190,7 +190,7 @@ class TestClient:
             weather_client.current_weather(zip_code="75000,FR")
 
     @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
-    @mock.patch("openweather_sdk.rest.forecast._ForecastAPI._get_5_day_forecast")
+    @mock.patch("openweather_sdk.rest.forecast._ForecastAPI._get_forecast_5_day")
     def test_forecast_5_day(
         self, mock_get_weather, mock_get_coordinates, weather_client
     ):
@@ -222,3 +222,37 @@ class TestClient:
         weather_client.remove()
         with pytest.raises(ClientDoesntExistException):
             weather_client.forecast_5_day(zip_code="75000,FR")
+
+    @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
+    @mock.patch("openweather_sdk.rest.forecast._ForecastAPI._get_forecast_hourly")
+    def test_forecast_hourly(
+        self, mock_get_weather, mock_get_coordinates, weather_client
+    ):
+        mock_response_coordinates = mock.Mock()
+        mock_response_coordinates.return_value = {
+            "name": "Paris",
+            "lat": 48.8588897,
+            "lon": 2.3200410217200766,
+        }
+        mock_get_coordinates.side_effect = mock_response_coordinates
+        coordinates = weather_client._get_location_coordinates("Paris")
+        assert coordinates == (2.32, 48.859)
+
+        mock_response_weather = mock.Mock()
+        mock_response_weather.return_value = WEATHER_API_CORRECT_DATA
+        mock_get_weather.side_effect = mock_response_weather
+        weather_data = weather_client._get_forecast_hourly(*coordinates)
+        assert weather_data == WEATHER_API_CORRECT_DATA
+
+        with pytest.raises(InvalidLocationException):
+            weather_client.forecast_hourly()
+
+        with pytest.raises(InvalidLocationException):
+            weather_client.forecast_hourly(zip_code=75000)
+
+        with pytest.raises(InvalidLocationException):
+            weather_client.forecast_hourly(location=42)
+
+        weather_client.remove()
+        with pytest.raises(ClientDoesntExistException):
+            weather_client.forecast_hourly(zip_code="75000,FR")
