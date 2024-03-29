@@ -41,3 +41,9 @@ class UnexpectedException(ClientBaseException):
     def __init__(self, message):
         super().__init__(f"Unexpected error! Error: {message}")
         logger.error(f"Unexpected error! Error: {message}")
+
+
+class InvalidTimeException(ClientBaseException):
+    def __init__(self, message):
+        super().__init__(message)
+        logger.warning(message)

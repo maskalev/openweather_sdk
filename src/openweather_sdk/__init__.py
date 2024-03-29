@@ -21,6 +21,7 @@ from openweather_sdk.rest.weather import _WeatherAPI
 from openweather_sdk.validators import (
     _validate_non_negative_integer_attr,
     _validate_selected_attr,
+    _validate_time,
 )
 
 warnings.filterwarnings("always", category=DeprecationWarning, module="openweather_sdk")
@@ -367,6 +368,24 @@ class Client:
                 )
                 return forecast
 
+    def _get_location_history_air_pollution(self, location, start, end):
+        lon, lat = self._get_location_coordinates(location)
+        return self._get_history_air_pollution(lon, lat, start, end)
+
+    def _get_zip_code_history_air_pollution(self, zip_code, start, end):
+        lon, lat = self._get_zip_code_coordinates(zip_code)
+        return self._get_history_air_pollution(lon, lat, start, end)
+
+    def _get_history_air_pollution(self, lon, lat, start, end):
+        air_pollution_api = _AirPollutionAPI(
+            lon=lon, lat=lat, appid=self.token, start=start, end=end
+        )
+        history = air_pollution_api._get_history_air_pollution()
+        logger.info(
+            f"The client {self} has received historical air pollution data: {history}"
+        )
+        return history
+
     def get_location_weather(self, location, compact_mode=True):
         """
         Returns current weather in location (city name, state code (only for
@@ -472,7 +491,7 @@ class Client:
             zip_code (str, optional): zip/post code and country code divided by comma.
         """
         logger.info(
-            f"The client {self} is being requested 5 day forecast in the location {location or zip_code}..."
+            f"The client {self} is being requested 5 day weather forecast in the location {location or zip_code}..."
         )
         if not self.is_alive:
             raise ClientDoesntExistException(self)
@@ -508,7 +527,7 @@ class Client:
             zip_code (str, optional): zip/post code and country code divided by comma.
         """
         logger.info(
-            f"The client {self} is being requested hourly forecast in the location {location or zip_code}..."
+            f"The client {self} is being requested hourly weather forecast in the location {location or zip_code}..."
         )
         if not self.is_alive:
             raise ClientDoesntExistException(self)
@@ -544,7 +563,7 @@ class Client:
             zip_code (str, optional): zip/post code and country code divided by comma.
         """
         logger.info(
-            f"The client {self} is being requested 16 days forecast in the location {location or zip_code}..."
+            f"The client {self} is being requested 16 days weather forecast in the location {location or zip_code}..."
         )
         if not self.is_alive:
             raise ClientDoesntExistException(self)
@@ -580,7 +599,7 @@ class Client:
             zip_code (str, optional): zip/post code and country code divided by comma.
         """
         logger.info(
-            f"The client {self} is being requested 30 days forecast in the location {location or zip_code}..."
+            f"The client {self} is being requested 30 days weather forecast in the location {location or zip_code}..."
         )
         if not self.is_alive:
             raise ClientDoesntExistException(self)
@@ -648,7 +667,7 @@ class Client:
             zip_code (str, optional): zip/post code and country code divided by comma.
         """
         logger.info(
-            f"The client {self} is being requested the forecast air pollution in the location {location or zip_code}..."
+            f"The client {self} is being requested the air pollution forecast in the location {location or zip_code}..."
         )
         if not self.is_alive:
             raise ClientDoesntExistException(self)
@@ -668,3 +687,41 @@ class Client:
                     "You need to specify zip code as a string"
                 )
             return self._get_zip_code_forecast_air_pollution(zip_code)
+
+    def air_pollution_history(self, location=None, zip_code=None, start=None, end=None):
+        """
+        Returns historical air_pollution data at specified location from start data to end.
+        Historical data is accessible from 27th November 2020.
+        The location can be provided either as a combination of city name,
+        state code (for the US), and country code separated by commas, or
+        as a combination of zip/post code and country code separated by commas.
+        Please ensure the usage of ISO 3166 country codes.
+
+        Args:
+            location (str, optional): city name, state code (only for the US) and country code divided by comma.
+            zip_code (str, optional): zip/post code and country code divided by comma.
+            start (int): start date (unix time, UTC time zone), e.g. start=1606488670.
+            end (int): end date (unix time, UTC time zone), e.g. end=1606747870.
+        """
+        logger.info(
+            f"The client {self} is being requested the forecast air histoty in the location {location or zip_code}... from {start} to {end}"
+        )
+        if not self.is_alive:
+            raise ClientDoesntExistException(self)
+        if not location and not zip_code:
+            raise InvalidLocationException(
+                "You need to specify the location or postal code."
+            )
+        start, end = _validate_time(start, end)
+        if location:
+            if not isinstance(location, str):
+                raise InvalidLocationException(
+                    "You need to specify the location as a string."
+                )
+            return self._get_location_history_air_pollution(location, start, end)
+        if zip_code:
+            if not isinstance(zip_code, str):
+                raise InvalidLocationException(
+                    "You need to specify zip code as a string"
+                )
+            return self._get_zip_code_history_air_pollution(zip_code, start, end)

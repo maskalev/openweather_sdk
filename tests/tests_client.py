@@ -400,3 +400,47 @@ class TestClient:
         weather_client.remove()
         with pytest.raises(ClientDoesntExistException):
             weather_client.air_pollution_forecast_hourly(zip_code="75000,FR")
+
+    @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
+    @mock.patch(
+        "openweather_sdk.rest.airpollution._AirPollutionAPI._get_history_air_pollution"
+    )
+    def test_air_pollution_history(
+        self, mock_get_weather, mock_get_coordinates, weather_client
+    ):
+        mock_response_coordinates = mock.Mock()
+        mock_response_coordinates.return_value = {
+            "name": "Paris",
+            "lat": 48.8588897,
+            "lon": 2.3200410217200766,
+        }
+        mock_get_coordinates.side_effect = mock_response_coordinates
+        coordinates = weather_client._get_location_coordinates("Paris")
+        assert coordinates == (2.32, 48.859)
+
+        mock_response_weather = mock.Mock()
+        mock_response_weather.return_value = WEATHER_API_CORRECT_DATA
+        mock_get_weather.side_effect = mock_response_weather
+        weather_data = weather_client._get_history_air_pollution(
+            *coordinates, start=1606435200, end=1606435200
+        )
+        assert weather_data == WEATHER_API_CORRECT_DATA
+
+        with pytest.raises(InvalidLocationException):
+            weather_client.air_pollution_history(start=1606435200, end=1606435200)
+
+        with pytest.raises(InvalidLocationException):
+            weather_client.air_pollution_history(
+                zip_code=75000, start=1606435200, end=1606435200
+            )
+
+        with pytest.raises(InvalidLocationException):
+            weather_client.air_pollution_history(
+                location=42, start=1606435200, end=1606435200
+            )
+
+        weather_client.remove()
+        with pytest.raises(ClientDoesntExistException):
+            weather_client.air_pollution_history(
+                zip_code="75000,FR", start=1606435200, end=1606435200
+            )

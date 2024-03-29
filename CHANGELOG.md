@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `air_pollution_forecast_hourly` method to enable hourly air pollution forecast
   requests based on either location name or zip/postal code.
 
+- `air_pollution_history` method to enable air pollution history requests based
+  on either location name or zip/postal code.
+
 ### Deprecated
 
 - `get_location_weather` method will be deprecated in version 1.0.0.

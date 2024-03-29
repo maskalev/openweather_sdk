@@ -9,11 +9,13 @@ class _AirPollutionAPI:
     See: https://openweathermap.org/api/air-pollution.
     """
 
-    def __init__(self, lon, lat, appid, **kwargs):
+    def __init__(self, lon, lat, appid, start=None, end=None, **kwargs):
         self.service_name = "data"
         self.lat = lat
         self.lon = lon
         self.appid = appid
+        self.start = start
+        self.end = end
         self.version = kwargs.get("version", "2.5")
         self.units = kwargs.get("units", "metric")
         self.language = kwargs.get("language", "en")
@@ -37,5 +39,18 @@ class _AirPollutionAPI:
         """Get hourly air pollution forecast for 4 days (96 timestamps) at the specified point."""
         end_point = "air_pollution/forecast"
         query_params = {"lat": self.lat, "lon": self.lon, "appid": self.appid}
+        url = _build_url(self.service_name, self.version, end_point, query_params)
+        return _APIRequest(url)._get_data()
+
+    def _get_history_air_pollution(self):
+        """Get historical air pollution data at the specified point."""
+        end_point = "air_pollution/history"
+        query_params = {
+            "lat": self.lat,
+            "lon": self.lon,
+            "appid": self.appid,
+            "start": self.start,
+            "end": self.end,
+        }
         url = _build_url(self.service_name, self.version, end_point, query_params)
         return _APIRequest(url)._get_data()
