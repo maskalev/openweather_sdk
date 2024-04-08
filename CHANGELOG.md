@@ -32,13 +32,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- `get_location_weather` method will be deprecated in version 1.0.0.
+- `get_location_weather` method.
   
-- `get_zip_weather` method will be deprecated in version 1.0.0.
+- `get_zip_weather` method.
 
-- `compact_mode` will be deprecated in version 1.0.0.
+- `compact_mode`.
 
-- JSON_Processor (to get weather in compact mode).
+- JSON_Processor.
 
 ## [0.3.3] - 2024-03-22
 
