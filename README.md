@@ -117,12 +117,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_weather(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_weather(zip_code="75007,FR")
 ```
@@ -148,12 +148,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_5_days(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_5_days(zip_code="75007,FR")
 ```
@@ -181,12 +181,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_hourly(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_hourly(zip_code="75007,FR")
 ```
@@ -214,12 +214,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_daily_16_days(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_daily_16_days(zip_code="75007,FR")
 ```
@@ -247,12 +247,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_daily_30_days(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.weather_forecast_daily_30_days(zip_code="75007,FR")
 ```
@@ -278,12 +278,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_air_pollution(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_air_pollution(zip_code="75007,FR")
 ```
@@ -309,12 +309,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.air_pollution_forecast_hourly(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.air_pollution_forecast_hourly(zip_code="75007,FR")
 ```
@@ -345,12 +345,12 @@ Args:
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_weather(location="Paris")
 ```
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_weather(zip_code="75007,FR")
 ```
@@ -365,14 +365,14 @@ Returns HTTP response's status.
 
 #### Request examples
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.health_check()
 ```
 
 #### Response
 
-```bash
+```python
 200
 ```
 
@@ -399,7 +399,7 @@ To request weather by location name, you need to pass the city name as an
 argument, and optionally the state code (only for the US) and country code, 
 separated by commas. 
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.get_location_weather("Paris")
 ```
@@ -411,7 +411,7 @@ Starting from version 0.3.2, it is recommended to use the `current_weather`
 method with the city name as an `location` argument, and optionally the state
 code (only for the US) and country code, separated by commas.
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_weather(location="Paris")
 ```
@@ -424,7 +424,7 @@ Please use
 To request weather by location name, you need to pass as an argument zip/post 
 code and country code divided by comma.
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.get_zip_weather("75007,FR")
 ```
@@ -436,7 +436,7 @@ Starting from version 0.3.2, it is recommended to use the `current_weather`
 method with an `zip_code` argument zip/post code and country code divided by
 comma.
 
-```bash
+```python
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.current_weather(zip_code="75007,FR")
 ```
@@ -564,7 +564,7 @@ Description of full format see
 
 ### Usage example
 
-```bash
+```python
 >>> from openweather_sdk import Client
 >>> c = Client(token=<YOUR_TOKEN>)
 >>> c.health_check()
