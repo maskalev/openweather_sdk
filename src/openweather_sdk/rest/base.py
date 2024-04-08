@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 import requests
 
 from openweather_sdk.exceptions import BadResponseException, UnexpectedException
-from openweather_sdk.globals import _DOMAIN
+from openweather_sdk.globals import _API_DOMAIN
 from openweather_sdk.logger_filters import TokenFilter
 
 logger = logging.getLogger(__name__)
@@ -17,9 +17,9 @@ def _create_params(query_params):
     return urlencode(eval(params))
 
 
-def _create_path(*segments):
+def _create_path(*segments, domain):
     path = "/".join(segments)
-    return f"{_DOMAIN}{path}"
+    return f"{domain}{path}"
 
 
 def _assemble_full_path(path_data):
@@ -28,8 +28,8 @@ def _assemble_full_path(path_data):
     return f"{path}?{params}"
 
 
-def _build_url(service_name, version, end_point, query_params):
-    path = _create_path(service_name, version, end_point)
+def _build_url(service_name, version, end_point, query_params, domain=_API_DOMAIN):
+    path = _create_path(service_name, version, end_point, domain=domain)
     path_data = {"path": path, "query_params": query_params}
     return _assemble_full_path(path_data)
 

@@ -69,7 +69,9 @@ _WEATHER_API_VERSIONS = {
     "2.5",
 }
 
-_DOMAIN = "http://api.openweathermap.org/"
+_API_DOMAIN = "http://api.openweathermap.org/"
+
+_PRO_DOMAIN = "http://pro.openweathermap.org/"
 
 _SPECIFIC_CACHES = [
     "current_weather",

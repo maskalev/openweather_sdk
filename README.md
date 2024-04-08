@@ -19,13 +19,13 @@ saved (previously requested) cities.
 
 [Cache](#cache)
 
-[Weather request](#weather-request)
+[Polling mode](#polling-mode)
 
-[Description of response formats](#description-of-response-formats)
+[Available requests (for versions from 1.0.0)](#available-requests)
+
+[Weather request (for versions up to 1.0.0)](#weather-request)
 
 [Logging](#logging)
-
-[Usage example](#usage-example)
 
 [Errors](#errors)
 
@@ -57,7 +57,7 @@ Additionally, if you need to modify the behavior of the SDK, you can pass
 
 `mode` - determines the operating mode of the SDK. In on-demand mode, the SDK
 makes requests to the API only upon client requests. In polling mode, the SDK
-regularly polls the API. Defaults: on-demand. Available options: on-demand, polling.
+regularly polls the API. Defaults: on-demand. Available options: on-demand, [polling](#polling-mode).
 
 `language` - determines the language for the output. Defaults: en. Available
 options and more info see [here](https://openweathermap.org/current#multi).
@@ -77,7 +77,308 @@ Each client has its own cache, defined by the number of stored locations and
 the Time-To-Live (TTL) of the information. In polling mode, the TTL determines
 the API polling interval.
 
+## Polling mode
+
+Note, that polling works only for current weather reaquests!
+All other requests operate in 'on-demand' mode regardless of the mode selected
+during client initialization.
+
+## Available requests
+
+This section is actual for versions from 1.0.0. For older versions, see the
+[weather request](#weather-request) section.
+
+Starting from version 1.0.0, the following requests are available:
+
+1. [current weather](#current-weather)
+1. [5 days weather forecast data with 3-hour step](#5-days-weather-forecast)
+1. [hourly weather forecast for 4 days](#hourly-weather-forecast)
+1. [16 days weather forecast](#16-days-weather-forecast)
+1. [30 days weather forecast](#30-days-weather-forecast)
+1. [current air pollution](#current-air-pollution)
+1. [hourly air pollution forecast for 4 days](#hourly-air-pollution-forecast)
+1. [historical air pollution data](#historical-air-pollution-data)
+1. [health check](#health-check)
+
+### Current weather
+
+Returns current weather in a specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_weather(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_weather(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on[openweathermap.org](https://openweathermap.org/current#example_JSON).
+
+### 5 days weather forecast
+
+Returns 5 days weather forecast data with 3-hour step at specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_5_days(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_5_days(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/forecast5#example_JSON).
+
+### Hourly weather forecast
+
+Returns hourly weather forecast for 4 days (96 timestamps) at specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Accessible with a "Developer" subscription and higher. See: https://openweathermap.org/full-price.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_hourly(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_hourly(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/api/hourly-forecast#example_JSON).
+
+### 16 days weather forecast
+
+Returns 16 days weather forecast data at specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Accessible with a "Startup" subscription and higher. See: https://openweathermap.org/full-price.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_daily_16_days(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_daily_16_days(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/forecast16#example_JSON).
+
+### 30 days weather forecast
+
+Returns 30 days weather forecast data at specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Accessible with a "Developer" subscription and higher. See: https://openweathermap.org/full-price.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_daily_30_days(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.weather_forecast_daily_30_days(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/api/forecast30#resp-year).
+
+### Current air pollution
+
+Returns current air pollution in a specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_air_pollution(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_air_pollution(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/api/air-pollution#descr).
+
+### Hourly air pollution forecast
+
+Returns hourly air_pollution forecast for 4 days (96 timestamps) at specified location.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.air_pollution_forecast_hourly(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.air_pollution_forecast_hourly(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/api/air-pollution#descr).
+   
+### Historical air pollution data
+
+Returns historical air_pollution data at specified location from start data to end.
+Historical data is accessible from 27th November 2020.
+The location can be provided either as a combination of city name,
+state code (for the US), and country code separated by commas, or
+as a combination of zip/post code and country code separated by commas.
+
+Please ensure the usage of ISO 3166 country codes.
+
+Args:
+
+`location` *(str, optional)*: city name, state code (only for the US) and country code divided by comma.
+
+`zip_code` *(str, optional)*: zip/post code and country code divided by comma.
+
+`start` *(int)*: start date (unix time, UTC time zone), e.g. start=1606488670.
+
+`end` *(int)*: end date (unix time, UTC time zone), e.g. end=1606747870.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_weather(location="Paris")
+```
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.current_weather(zip_code="75007,FR")
+```
+
+#### Response
+
+See exemple on [openweathermap.org](https://openweathermap.org/api/air-pollution#descr).
+
+### Health check
+
+Returns HTTP response's status.
+
+#### Request examples
+
+```bash
+>>> c = Client(token=<YOUR_TOKEN>)
+>>> c.health_check()
+```
+
+#### Response
+
+```bash
+200
+```
+
 ## Weather request
+
+**Outdated. Relevant for versions up to 1.0.0!**
 
 Currently, handling requests for current weather by location name or zip code is
 implemented.
@@ -85,8 +386,8 @@ implemented.
 By default, the response is returned in a compact format. You can change this
 behavior by passing an [additional argument](#additional-arguments-1).
 
-Compact format will be deprecated in
-[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
+Compact format has been be deprecated in
+[version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased)!
 
 Also, refer to [the example queries](#usage-example).
 
@@ -101,7 +402,7 @@ separated by commas.
 >>> c.get_location_weather("Paris")
 ```
 
-The `get_location_weather` method will be deprecated in
+The `get_location_weather` method has been deprecated in
 [version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
 Starting from version 0.3.2, it is recommended to use the `current_weather`
@@ -126,7 +427,7 @@ code and country code divided by comma.
 >>> c.get_zip_weather("75007,FR")
 ```
 
-The `get_zip_weather` method will be deprecated in
+The `get_zip_weather` method has been deprecated in
 [version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
 Starting from version 0.3.2, it is recommended to use the `current_weather`
@@ -146,14 +447,14 @@ Please use
 `compact_mode` - determines whether to return the response in a compact format.
 Defaults: True.
 
-The `compact_mode` will be deprecated in
+The `compact_mode` has been deprecated in
 [version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
-## Description of response formats
+### Description of response formats
 
-### Compact format (used by default)
+#### Compact format (used by default)
 
-The `compact_mode` will be deprecated in
+The `compact_mode` has been deprecated in
 [version 1.0.0](https://github.com/maskalev/openweather_sdk/blob/master/CHANGELOG.md#unreleased).
 
 
@@ -208,7 +509,7 @@ Imperial: miles/hour.
 
 `name` - city name.
 
-### Full format
+#### Full format
 
 ```json
 {
@@ -259,19 +560,7 @@ Imperial: miles/hour.
 Description of full format see
 [here](https://openweathermap.org/current#fields_json)
 
-## Logging
-
-When using logging, be careful: the `urllib3` library logs sensitive
-information (such as API access tokens) when the DEBUG level is enabled!
-
-To disable logging from the `urllib3` library in your project, use this:
-
-```python
-import logging
-logging.getLogger("urllib3").propagate = False
-```
-
-## Usage example
+### Usage example
 
 ```bash
 >>> from openweather_sdk import Client
@@ -410,6 +699,18 @@ logging.getLogger("urllib3").propagate = False
     'cod': 200
 }
 >>> c.remove()
+```
+
+## Logging
+
+When using logging, be careful: the `urllib3` library logs sensitive
+information (such as API access tokens) when the DEBUG level is enabled!
+
+To disable logging from the `urllib3` library in your project, use this:
+
+```python
+import logging
+logging.getLogger("urllib3").propagate = False
 ```
 
 ## Errors

@@ -1,4 +1,4 @@
-from openweather_sdk.globals import _FORECAST_API_VERSIONS
+from openweather_sdk.globals import _FORECAST_API_VERSIONS, _PRO_DOMAIN
 from openweather_sdk.rest.base import _APIRequest, _build_url
 from openweather_sdk.validators import _validate_selected_attr
 
@@ -52,7 +52,9 @@ class _ForecastAPI:
             "units": self.units,
             "lang": self.language,
         }
-        url = _build_url(self.service_name, self.version, end_point, query_params)
+        url = _build_url(
+            self.service_name, self.version, end_point, query_params, domain=_PRO_DOMAIN
+        )
         return _APIRequest(url)._get_data()
 
     def _get_forecast_daily_16_days(self):
@@ -78,5 +80,7 @@ class _ForecastAPI:
             "units": self.units,
             "lang": self.language,
         }
-        url = _build_url(self.service_name, self.version, end_point, query_params)
+        url = _build_url(
+            self.service_name, self.version, end_point, query_params, domain=_PRO_DOMAIN
+        )
         return _APIRequest(url)._get_data()

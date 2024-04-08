@@ -1,5 +1,4 @@
 import sys
-import warnings
 from pathlib import Path
 from unittest import mock
 
@@ -74,74 +73,6 @@ class TestClient:
             Client(token="another_token", ttl="1")
 
         Client(token="another_token")
-
-    @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._direct")
-    @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
-    def test_get_location_current_weather(
-        self, mock_get_weather, mock_get_coordinates, weather_client
-    ):
-        with warnings.catch_warnings(record=True) as w:
-            weather_client.get_location_weather(location="Paris")
-            assert len(w) == 1
-            assert issubclass(w[-1].category, DeprecationWarning)
-
-        mock_response_coordinates = mock.Mock()
-        mock_response_coordinates.return_value = {
-            "name": "Paris",
-            "lat": 48.8588897,
-            "lon": 2.3200410217200766,
-        }
-        mock_get_coordinates.side_effect = mock_response_coordinates
-        coordinates = weather_client._get_location_coordinates("Paris")
-        assert coordinates == (2.32, 48.859)
-
-        mock_response_weather = mock.Mock()
-        mock_response_weather.return_value = WEATHER_API_CORRECT_DATA
-        mock_get_weather.side_effect = mock_response_weather
-        weather_data = weather_client._get_current_weather(*coordinates)
-        assert weather_data == WEATHER_API_CORRECT_DATA
-
-        with pytest.raises(InvalidLocationException):
-            weather_client.get_location_weather(location=42)
-
-        weather_client.remove()
-        with pytest.raises(ClientDoesntExistException):
-            weather_client.get_location_weather(location="Paris")
-
-    @mock.patch("openweather_sdk.rest.geocoding._GeocodingAPI._zip")
-    @mock.patch("openweather_sdk.rest.weather._WeatherAPI._get_current_wheather")
-    def test_get_zip_current_weather(
-        self, mock_get_weather, mock_get_coordinates, weather_client
-    ):
-        with warnings.catch_warnings(record=True) as w:
-            weather_client.get_zip_weather(zip_code="75000,FR")
-            assert len(w) == 1
-            assert issubclass(w[-1].category, DeprecationWarning)
-
-        mock_response_coordinates = mock.Mock()
-        mock_response_coordinates.return_value = {
-            "zip": "75000",
-            "name": "Paris",
-            "lat": 48.8588897,
-            "lon": 2.3200410217200766,
-            "country": "FR",
-        }
-        mock_get_coordinates.side_effect = mock_response_coordinates
-        coordinates = weather_client._get_zip_code_coordinates("75000,FR")
-        assert coordinates == (2.32, 48.859)
-
-        mock_response_weather = mock.Mock()
-        mock_response_weather.return_value = WEATHER_API_CORRECT_DATA
-        mock_get_weather.side_effect = mock_response_weather
-        weather_data = weather_client._get_current_weather(*coordinates)
-        assert weather_data == WEATHER_API_CORRECT_DATA
-
-        with pytest.raises(InvalidLocationException):
-            weather_client.get_zip_weather(zip_code=75000)
-
-        weather_client.remove()
-        with pytest.raises(ClientDoesntExistException):
-            weather_client.get_zip_weather(zip_code="75000,FR")
 
     @mock.patch("openweather_sdk.rest.openweather._OpenWeather._health_check")
     def test_health_check(self, mock_health_check, weather_client):

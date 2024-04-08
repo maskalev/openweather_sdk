@@ -12,7 +12,7 @@ sys.path.append(f"{__FILE_PATH__}/src")
 from fixtures import WEATHER_API_CORRECT_DATA
 
 from openweather_sdk.exceptions import BadResponseException
-from openweather_sdk.globals import _DOMAIN
+from openweather_sdk.globals import _API_DOMAIN
 from openweather_sdk.rest.base import (
     _APIRequest,
     _assemble_full_path,
@@ -76,15 +76,19 @@ def test_create_params():
 
 def test_assemble_full_path():
     path_data = {
-        "path": _DOMAIN,
+        "path": _API_DOMAIN,
         "query_params": {"param1": "value1", "param2": "value2"},
     }
-    assert _assemble_full_path(path_data) == f"{_DOMAIN}?param1=value1&param2=value2"
+    assert (
+        _assemble_full_path(path_data) == f"{_API_DOMAIN}?param1=value1&param2=value2"
+    )
 
 
 def test_create_path():
     segments = ("segment1", "segment2")
-    assert _create_path(*segments) == f"{_DOMAIN}segment1/segment2"
+    assert (
+        _create_path(*segments, domain=_API_DOMAIN) == f"{_API_DOMAIN}segment1/segment2"
+    )
 
 
 def test_build_url():
@@ -94,5 +98,5 @@ def test_build_url():
     query_params = {"param1": "value1", "param2": "value2"}
     assert (
         _build_url(service_name, version, end_point, query_params)
-        == f"{_DOMAIN}service_name/version/end_point?param1=value1&param2=value2"
+        == f"{_API_DOMAIN}service_name/version/end_point?param1=value1&param2=value2"
     )
