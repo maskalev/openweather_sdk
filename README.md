@@ -86,7 +86,7 @@ during client initialization.
 ## Available requests
 
 This section is actual for versions from 1.0.0. For older versions, see the
-[weather request](#weather-request) section.
+[outdated weather requests](#outdated-weather-requests) section.
 
 Starting from version 1.0.0, the following requests are available:
 
@@ -376,9 +376,11 @@ Returns HTTP response's status.
 200
 ```
 
-## Weather request
+## Outdated weather requests
 
 **Outdated. Relevant for versions up to 1.0.0!**
+
+**Available requests for versions from 1.0.0 see [here](#available-requests).**
 
 Currently, handling requests for current weather by location name or zip code is
 implemented.
