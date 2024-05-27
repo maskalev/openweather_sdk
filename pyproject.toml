@@ -21,7 +21,7 @@ classifiers = [
 ]
 keywords = ["weather", "sdk", "openweather"]
 dependencies = [
-    "requests~=2.31.0",
+    "requests>=2.31,<2.33",
 ]
 requires-python = ">=3.7"
 
