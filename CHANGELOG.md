@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-12-28
+
+### Security
+
+- Supporting Python 3.13.
+
+- Update requirements:
+  - `black` from 24.3.0 to 24.4.2 (on python > 3.7).
+  - `freezegun` from 1.4.0 to 1.5.1.
+  - `pytest` from 8.1.1 to 8.3.1 (on python > 3.7).
+  - `requests`' maximum version is <2.33.
+
 ## [1.0.0] - 2024-04-08
 
 ### Added
